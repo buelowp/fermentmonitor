@@ -8,10 +8,19 @@
 #ifndef FERMENTMONITOR_H_
 #define FERMENTMONITOR_H_
 
-class FermentMonitor {
+#include <QtGui>
+
+class FermentMonitor : public QFrame {
+	Q_OBJECT
 public:
-	FermentMonitor();
+	FermentMonitor(QObject *parent = 0);
 	virtual ~FermentMonitor();
+
+	bool init();
+
+private:
+	RestServer *restServer;
+
 };
 
 #endif /* FERMENTMONITOR_H_ */

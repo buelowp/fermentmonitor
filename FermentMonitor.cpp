@@ -7,7 +7,7 @@
 
 #include "FermentMonitor.h"
 
-FermentMonitor::FermentMonitor() {
+FermentMonitor::FermentMonitor(QObject *parent) : QFrame(parent) {
 	// TODO Auto-generated constructor stub
 
 }

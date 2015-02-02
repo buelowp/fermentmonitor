@@ -7,11 +7,15 @@
 
 #include <QtCore>
 #include <QApplication>
-#include "RestServer.h"
+#include "FermentMonitor.h"
 
 int main(int argc, char **argv)
 {
     QApplication app(argc, argv);
+    FermentMonitor monitor;
+
+    monitor.init();
+    monitor.show();
 
     return app.exec();
 }
