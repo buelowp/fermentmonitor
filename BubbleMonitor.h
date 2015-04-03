@@ -28,7 +28,7 @@
 class BubbleMonitor : public QThread {
 	Q_OBJECT
 public:
-	BubbleMonitor(QString GPIO, QString name, QObject *parent = 0);
+	BubbleMonitor(QString GPIO, QString name, QThread *parent = 0);
 	virtual ~BubbleMonitor();
 
 	void run();

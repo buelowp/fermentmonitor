@@ -22,19 +22,15 @@
 
 #include "BubbleMonitor.h"
 
-BubbleMonitor::BubbleMonitor(QString GPIO, QString Name, QObject *parent) : QObject(parent) {
-	// TODO Auto-generated constructor stub
+BubbleMonitor::BubbleMonitor(QString GPIO, QString Name, QThread *parent) : QThread(parent) {
 	bubbles = 0;
 	gpioFile = new QFile(GPIO);
 	name = Name;
+	watcher = NULL;
 }
 
 BubbleMonitor::~BubbleMonitor() {
-	for (int i = 0; i < watchers.size(); i++) {
-		QFileSystemWatcher *fw = watchers[i];
-		delete fw;
-	}
-	watchers.clear();
+	delete watcher;
 }
 
 void BubbleMonitor::addEvent()
@@ -48,7 +44,7 @@ void BubbleMonitor::addEvent()
 	}
 
 	first = events.head();
-	if ((lastEvent.toTime_T() - first.toTime_T()) > 60) {
+	if ((lastEvent.toTime_t() - first.toTime_t()) > 60) {
 		events.dequeue();
 	}
 	events.enqueue(lastEvent);
@@ -56,21 +52,20 @@ void BubbleMonitor::addEvent()
 
 void BubbleMonitor::fileChanged(QString file)
 {
-	QFile f(file);
 	QByteArray ba;
 
-	ba = f.readLine();
+	ba = gpioFile->readAll();
 
 	if (ba == "1") {
 		addEvent();
-		emit(bubbleCount(++bubbles, pin));
+		emit(bubbleCount(name, ++bubbles));
 	}
 }
 
 void BubbleMonitor::run()
 {
 	QFileSystemWatcher *fw = new QFileSystemWatcher(this);
-	fw.addPath(gpioFile);
+	fw.addPath(gpioFile->fileName());
 	connect(fw, SIGNAL(fileChanged(QString)), this, SLOT(fileChanged(QString)));
 
 	//* We have to wait until fementation starts before we can do updates or spin in the check loop
@@ -82,7 +77,7 @@ void BubbleMonitor::run()
 		QDateTime now = QDateTime::currentDateTime();
 
 		// If we haven't had a bubble event in 12 hours, we're done
-		if ((lastEvent.toTime_T() - now.toTime_T()) > 43200) {
+		if ((lastEvent.toTime_t() - now.toTime_t()) > 43200) {
 			emit fermentationComplete(pin);
 			events.clear();
 		}

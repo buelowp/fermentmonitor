@@ -23,7 +23,16 @@
 #ifndef RESTSERVER_H_
 #define RESTSERVER_H_
 
+#include <QtCore>
+#include <QObject>
 #include <QtNetwork>
+#include <QTcpServer>
+
+#define RS_HTTP_GET		1
+#define RS_HTTP_POST	2
+#define RS_HTTP_PUT		3
+#define RS_HTTP_HEAD	4
+#define RS_HTTP_DELETE	5
 
 class RestServer : public QTcpServer {
 	Q_OBJECT
@@ -37,6 +46,13 @@ public:
 	void incomingConnect(int);
 	void pause();
 	void resume();
+	int decodeRequestType(QString);
+	void setBubblesPerMin(QString, int);
+	void setBubbleCount(QString, int);
+	void setTemp(QString, double);
+	void setFermentState(QString, bool);
+	void handleGetRequest(QVector<QStringList>);
+	void sendTempResponse(double);
 
 private slots:
 	void readClient();
@@ -44,6 +60,11 @@ private slots:
 
 private:
 	void decodeGetRequest(QStringList&);
+
+	QHash<QString, int> bubbleCount;
+	QHash<QString, int> bubblesPerMin;
+	QHash<QString, double> probes;
+	QHash<QString, bool> fermentState;
 };
 
 #endif /* RESTSERVER_H_ */

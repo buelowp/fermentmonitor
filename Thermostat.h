@@ -1,5 +1,5 @@
 /*
- * FermentMonitor.h
+ * Thermostat.cpp
  *
  *  This file is part of FermentMonitor.
  *
@@ -16,38 +16,48 @@
  *  You should have received a copy of the GNU General Public License
  *  along with FermentMonitor.  If not, see <http://www.gnu.org/licenses/>.
  *
- *  Created on: Feb 2, 2015
- *      Author: pete
+ *  Created on: April 3, 2015
+ *      Author: Peter Buelow
  */
 
-#ifndef FERMENTMONITOR_H_
-#define FERMENTMONITOR_H_
+#ifndef THERMOSTAT_H_
+#define THERMOSTAT_H_
 
-#include "RestServer.h"
-#include "BubbleMonitor.h"
-#include "TempMonitor.h"
-#include "Thermostat.h"
+#include <QtCore>
 
-#include <QtWidgets>
+#define IDLE	0
+#define WARMING	1
+#define COOLING 2
 
-class FermentMonitor : public QFrame {
+#define HIGHTEMPALARM	0
+#define LOWTEMPALARM	1
+
+class Thermostat {
 	Q_OBJECT
-public:
-	FermentMonitor(QFrame *parent = 0);
-	virtual ~FermentMonitor();
 
-	void addGPIO(QString, QString);
+public:
+	Thermostat();
+	virtual ~Thermostat();
+	void setCooling(double);
+	void setWarming(double);
+
+signals:
+	void heatState(bool);
+	void coolState(bool);
+	void tempAlarm(int);
 
 public slots:
-	void bubbleCount(QString, int);
-	void tempChange(QString, double);
-	void fermentationComplete(QString);
+	void setFermentOneTemp(double);
+	void setFermentTwoTemp(double);
+	void setBoxTemp(double);
 
 private:
-	RestServer *restHandler;
-	QHash<QString, BubbleMonitor*> bubbleCounters;
-	TempMonitor *therms;
-	Thermostat *thermostat;
+	void runCooler(double);
+	void runHeater(double);
+	void checkTempError(double);
+
+	double targetTemp;
+	int direction;
 };
 
-#endif /* FERMENTMONITOR_H_ */
+#endif /* THERMOSTAT_H_ */

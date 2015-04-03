@@ -22,31 +22,40 @@
 
 #include "FermentMonitor.h"
 
-FermentMonitor::FermentMonitor(QObject *parent) : QFrame(parent) {
+FermentMonitor::FermentMonitor(QFrame *parent) : QFrame(parent) {
 	// TODO Auto-generated constructor stub
 	therms = new TempMonitor(this);
-	bubbleCounter = new BubbleMonitor(this);
+	restHandler = new RestServer(80);
+	thermostat = new Thermostat();
 }
 
 FermentMonitor::~FermentMonitor() {
 	// TODO Auto-generated destructor stub
 }
 
-void FermentMonitor::addGPIO(QString s, int g)
+void FermentMonitor::addGPIO(QString path, QString name)
 {
-	BubbleMonitor *bm = new BubbleMonitor(s, g, this);
-	connect(bc, SIGNAL(bubbleCount(QString, int)), this, SLOT(bubbleCount(QString, int)));
-	connect(bc, SIGNAL(fermentationComplete(QString)), this, SLOT(fementationComplete(QString)));
-	bubbleCounters.insert(g, bm);
+	BubbleMonitor *bm = new BubbleMonitor(path, name, this);
+	connect(bm, SIGNAL(bubbleCount(QString, int)), this, SLOT(bubbleCount(QString, int)));
+	connect(bm, SIGNAL(fermentationComplete(QString)), this, SLOT(fementationComplete(QString)));
+	bubbleCounters.insert(name, bm);
 }
 
 void FermentMonitor::bubbleCount(QString name, int count)
 {
 	BubbleMonitor *bm = bubbleCounters.value(name);
 	int bpm = bm->bubblesPerMinute();
+	restHandler->setBubbleCount(name, count);
+	restHandler->setBubblesPerMin(name, bpm);
+}
+
+void FermentMonitor::tempChange(QString name, double temp)
+{
+	 restHandler->setTemp(name, temp);
 }
 
 void FermentMonitor::fermentationComplete(QString name)
 {
-
+	restHandler->setFermentState(name, true);
 }
+

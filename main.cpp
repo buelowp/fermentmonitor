@@ -21,13 +21,13 @@
  */
 
 #include <QtCore>
-#include <QApplication>
+#include <QCoreApplication>
 #include "FermentMonitor.h"
 
 int main(int argc, char **argv)
 {
     QApplication app(argc, argv);
-    QStringList argList = QApplication::arguments();
+    QStringList argList = QCoreApplication::arguments();
     FermentMonitor monitor;
 
     for (int i = 0; i < argList.size(); i++) {
