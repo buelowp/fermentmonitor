@@ -25,39 +25,60 @@
 
 #include <QtCore>
 
-#define IDLE	0
-#define WARMING	1
-#define COOLING 2
+#include "Fermenter.h"
+#include "FermenterGPIO.h"
 
-#define HIGHTEMPALARM	0
-#define LOWTEMPALARM	1
-
-class Thermostat {
+class Thermostat : public QObject {
 	Q_OBJECT
 
 public:
-	Thermostat();
+	Thermostat(QObject *parent = 0);
 	virtual ~Thermostat();
-	void setCooling(double);
-	void setWarming(double);
+	void setDirection(int);
+	bool addCoolerGPIO(QString);
+	bool addHeaterGPIO(QString);
+	ThermAlarms setTargetTemps(double, double);
+	void shutdown();
 
 signals:
 	void heatState(bool);
 	void coolState(bool);
-	void tempAlarm(int);
+	void thermostatAlarm(enum ThermAlarms);
 
 public slots:
-	void setFermentOneTemp(double);
-	void setFermentTwoTemp(double);
-	void setBoxTemp(double);
+	void setFermenterTemp(double);
+	void currBoxTemp(double);
+	void currFermOneTemp(double);
+	void currFermTwoTemp(double);
+	void coolerValueChange(QByteArray);
+	void heaterValueChange(QByteArray);
+	void coolerSafeToShutdown();
 
 private:
-	void runCooler(double);
-	void runHeater(double);
+	void runCooler();
+	void runHeater();
+	void stopCooler();
+	void stopHeater();
 	void checkTempError(double);
+	bool validTemp(double);
+	int activeFermenters();
+	bool coolerIsRunning();
+	bool heaterIsRunning();
 
-	double targetTemp;
-	int direction;
+	QTimer *tFermTempWatchdog;
+	FermenterGPIO *pHeater;
+	FermenterGPIO *pCooler;
+	double dTargetFermTemp;
+	double dBoxTemp;
+	double dExternalTemp;
+	double dFermOneTemp;
+	double dFermTwoTemp;
+	bool bCoolerIsRunning;
+	bool bHeaterIsRunning;
+	bool bHeaterEnabled;
+	bool bCoolerEnabled;
+	bool bCoolerTimeout;
+	bool bShutdownOnTimeout;
 };
 
 #endif /* THERMOSTAT_H_ */

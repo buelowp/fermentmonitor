@@ -22,64 +22,221 @@
 
 #include "Thermostat.h"
 
-Thermostat::Thermostat() {
-	// TODO Auto-generated constructor stub
-	direction = 0;
+Thermostat::Thermostat(QObject *parent) : QObject(parent)
+{
+	bCoolerIsRunning = false;
+	bHeaterIsRunning = false;
+	bHeaterEnabled = false;
+	bCoolerEnabled = false;
+	bCoolerTimeout = false;
+	bShutdownOnTimeout = false;
+	dBoxTemp = 0.0;
+	dTargetFermTemp = 0.0;
+	dExternalTemp = 0.0;
+	dFermTwoTemp = 0.0;
+	dFermOneTemp = 0.0;
+	pHeater = NULL;
+	pCooler = NULL;
+
+	tFermTempWatchdog = new QTimer(this);
 }
 
 Thermostat::~Thermostat() {
 	// TODO Auto-generated destructor stub
 }
 
-void Thermostat::setBoxTemp(double t)
+bool Thermostat::addHeaterGPIO(QString gpio)
 {
-	switch (direction) {
-	case COOLING:
-		if (t > targetTemp) {
-			runCooler(t);
-		}
-		if (t < targetTemp) {
-			checkTempError(t);
-		}
-		break;
-	case WARMING:
-		if (t < targetTemp) {
-			runHeater(t);
-		}
-		if (t > targetTemp) {
-			checkTempError(t);
-		}
+	pHeater = new FermenterGPIO(this);
+	if (pHeater->setGPIO(gpio)) {
+		bHeaterEnabled = true;
+		connect(pHeater, SIGNAL(valueChanged(QByteArray)), this, SLOT(heaterValueChanged(QByteArray)));
+		return bHeaterEnabled;
+	}
+	return false;
+}
+
+bool Thermostat::addCoolerGPIO(QString gpio)
+{
+	pCooler = new FermenterGPIO(this);
+	if (pCooler->setGPIO(gpio)) {
+		bCoolerEnabled = true;
+		connect(pCooler, SIGNAL(valueChanged(QByteArray)), this, SLOT(coolerValueChanged(QByteArray)));
+		return bCoolerEnabled;
+	}
+	return false;
+}
+
+void Thermostat::heaterValueChange(QByteArray ba)
+{
+	if (bCoolerIsRunning) {
+		shutdown();
+		emit thermostatAlarm(TWOUNITSRUNNING);
+		return;
+	}
+
+	if (ba == "0") {
+		bHeaterIsRunning = false;
+		emit heatState(false);
+	}
+	if (ba == "1") {
+		bHeaterIsRunning = true;
+		emit heatState(true);
 	}
 }
 
-void Thermostat::setFermentOneTemp(double t)
+void Thermostat::coolerValueChange(QByteArray ba)
 {
-}
-
-void Thermostat::setFermentTwoTemp(double t)
-{
-
-}
-
-void Thermostat::setCooling(double t)
-{
-	direction = COOLING;
-	targetTemp = t;
-}
-
-void Thermostat::setWarming(double t)
-{
-	direction = WARMING;
-	targetTemp = t;
-}
-
-void Thermostat::checkTempError(double t)
-{
-	if (t > (targetTemp + 5)) {
-		emit tempAlarm(HIGHTEMPALARM);
+	if (bHeaterIsRunning) {
+		shutdown();
+		emit thermostatAlarm(TWOUNITSRUNNING);
+		return;
 	}
-	else if (t < (targetTemp - 5)) {
-		emit tempAlarm(LOWTEMPALARM);
+
+	if (ba == "0") {
+		bCoolerIsRunning = false;
+		emit heatState(false);
+	}
+	if (ba == "1") {
+		bCoolerIsRunning = true;
+		emit heatState(true);
 	}
 }
 
+bool Thermostat::validTemp(double t)
+{
+	if (t > 45 && t < 72)
+		return true;
+
+	return false;
+}
+
+void Thermostat::currFermOneTemp(double t)
+{
+	if (!validTemp(t))
+		return;
+
+	dFermOneTemp = t;
+
+	if (activeFermenters() == 2) {
+		if (t < (dFermTwoTemp - 2) || t > (dFermTwoTemp + 2)) {
+			emit thermostatAlarm(FERMENTERMISMATCH);
+			return;
+		}
+	}
+
+	if (t < (dTargetFermTemp - 2)) {
+		runHeater();
+	}
+	if (t > (dTargetFermTemp + 2)) {
+		runCooler();
+	}
+	if (t < (dTargetFermTemp - 1) && bCoolerIsRunning) {
+		stopCooler();
+	}
+	if (t > (dTargetFermTemp + 1) && bHeaterIsRunning) {
+		stopHeater();
+	}
+}
+
+void Thermostat::currFermTwoTemp(double t)
+{
+	if (!validTemp(t))
+		return;
+
+	dFermTwoTemp = t;
+
+	if (activeFermenters() == 2) {
+		if (t < (dFermOneTemp - 2) || t > (dFermOneTemp + 2)) {
+			emit thermostatAlarm(FERMENTERMISMATCH);
+			return;
+		}
+	}
+
+	if (t < (dTargetFermTemp - 2)) {
+		runHeater();
+	}
+	if (t > (dTargetFermTemp + 2)) {
+		runCooler();
+	}
+	if (t < (dTargetFermTemp - 1) && bCoolerIsRunning) {
+		stopCooler();
+	}
+	if (t > (dTargetFermTemp + 1) && bHeaterIsRunning) {
+		stopHeater();
+	}
+}
+
+void Thermostat::currBoxTemp(double t)
+{
+	// Try to avoid overheating and starting a fire
+	if (t > 80) {
+		shutdown();
+		emit thermostatAlarm(HIGHTEMP);
+	}
+
+}
+
+void Thermostat::runCooler()
+{
+	QByteArray ba("1");
+
+	if (bCoolerIsRunning)
+		return;
+
+	if (bHeaterIsRunning) {
+		emit thermostatAlarm(HEATERRUNNING);
+		return;
+	}
+
+	pCooler->setValue(ba);
+	if (pCooler->checkValue("1"))
+		bCoolerIsRunning = true;
+
+	QTimer::singleShot(300000, this, SLOT(coolerSafeToShutdown()));
+}
+
+void Thermostat::runHeater()
+{
+	if (bHeaterIsRunning)
+		return;
+
+	if (bCoolerIsRunning) {
+		emit thermostatAlarm(COOLERRUNING);
+		return;
+	}
+
+	pHeater->setValue(QByteArray("1"));
+	if (pHeater->checkValue("1"))
+		bHeaterIsRunning = true;
+}
+
+void Thermostat::stopCooler()
+{
+	if (bCoolerTimeout) {
+		pCooler->setValue(QByteArray("0"));
+		if (pCooler->checkValue("0")) {
+			bCoolerIsRunning = false;
+		}
+	}
+	else {
+		bShutdownOnTimeout = true;
+	}
+}
+
+void Thermostat::stopHeater()
+{
+	pHeater->setValue(QByteArray("0"));
+	if (pHeater->checkValue("0")) {
+		bHeaterIsRunning = false;
+	}
+}
+
+void Thermostat::coolerSafeToShutdown()
+{
+	if (bShutdownOnTimeout) {
+		stopCooler();
+		bShutdownOnTimeout = false;
+	}
+	bCoolerTimeout = true;
+}
