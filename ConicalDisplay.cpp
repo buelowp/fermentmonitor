@@ -22,26 +22,37 @@
 
 #include "ConicalDisplay.h"
 
-ConicalDisplay::ConicalDisplay(QWidget *parent) : QWidget(parent)
+ConicalDisplay::ConicalDisplay(QWidget *parent, Qt::WindowFlags f) : QFrame(parent, f)
 {
-	layout = NULL;
 	lbName = new QLabel(this);
+	lbName->setText("HELP");
+	lbName->setAlignment(Qt::AlignCenter);
+	lbName->setStyleSheet(".QLabel{font: 32pt; color: black;}");
 	lbTemp = new QLabel(this);
-	lbTemp->setNum(0.0);
+	lbTemp->setText(QString("%1 F").arg((double)75.1));
+	lbTemp->setStyleSheet(".QLabel{font: 48pt; color: green; border-style: solid; border-radius: 5px; border-width: 1px;}");
+	lbTemp->setAlignment(Qt::AlignCenter);
 	lbBPM = new QLabel(this);
-	lbBPM->setNum(0);
-	btnEnable = new QPushButton("Enable", this);
+	lbBPM->setText(QString("%1 BPM").arg(0));
+	lbBPM->setStyleSheet(".QLabel{font: 48pt; color: red; border-style: solid; border-radius: 5px; border-width: 1px;}");
+	lbBPM->setAlignment(Qt::AlignCenter);
+	btnEnable = new QPushButton("Start", this);
+	btnEnable->setStyleSheet(".QPushButton{font: 36pt; color: black; border-radius: 5px; border-style: solid; border-width: 1px;}");
 	tUpdate = new QTimer(this);
 	sw = new StopWatch();
+
+	setFrameShape(QFrame::Box);
+	setFrameStyle(QFrame::Plain);
+	setBackground(BACKGROUND_IDLE);
+	setStyleSheet(".QFrame{background-color: red; border-radius: 5px; border-style: solid; border-width: 1px;}");
 
 	connect(tUpdate, SIGNAL(timeout()), this, SLOT(update()));
 	connect(btnEnable, SIGNAL(pressed()), this, SLOT(enable()));
 }
 
-ConicalDisplay::ConicalDisplay(QString n, QWidget *parent) : QWidget(parent)
+ConicalDisplay::ConicalDisplay(QString n, QWidget *parent, Qt::WindowFlags f) : QFrame(parent, f)
 {
 	name = n;
-	layout = NULL;
 	lbName = new QLabel(name, this);
 	lbTemp = new QLabel(this);
 	lbTemp->setNum(0.0);
@@ -51,12 +62,35 @@ ConicalDisplay::ConicalDisplay(QString n, QWidget *parent) : QWidget(parent)
 	tUpdate = new QTimer(this);
 	sw = new StopWatch();
 
+//	setFrameShape(QFrame::Box);
+//	setFrameStyle(QFrame::Plain);
+//	setBackground(BACKGROUND_IDLE);
+	setStyleSheet(".QFrame{background-color: red; border-radius: 5px;}");
+
 	connect(tUpdate, SIGNAL(timeout()), this, SLOT(update()));
 	connect(btnEnable, SIGNAL(pressed()), this, SLOT(enable()));
 }
 
 ConicalDisplay::~ConicalDisplay() {
 	// TODO Auto-generated destructor stub
+}
+
+void ConicalDisplay::showEvent(QShowEvent* e)
+{
+	if (e->type() == QEvent::Show) {
+		lbName->setGeometry(0, 0, 800, height() / 3);
+		lbTemp->setGeometry(10, height() / 3, 290, (((height() / 3) * 2) - 10));
+		lbBPM->setGeometry(310, height() / 3, 290, (((height() / 3) * 2) - 10));
+		btnEnable->setGeometry(610, height() / 3, 175, (((height() / 3) * 2) - 10));
+	}
+}
+
+void ConicalDisplay::paintEvent(QPaintEvent *e)
+{
+	QStyleOption opt;
+	opt.init(this);
+	QPainter p(this);
+	style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 }
 
 void ConicalDisplay::enable()
@@ -74,19 +108,6 @@ void ConicalDisplay::enable()
 void ConicalDisplay::update()
 {
 	emit updateRuntime(sw->toString());
-}
-
-void ConicalDisplay::showEvent(QShowEvent *e)
-{
-	if (e->type() == QEvent::Show) {
-		if (!layout) {
-			layout = new QHBoxLayout(this);
-			layout->addWidget(lbName);
-			layout->addWidget(lbTemp);
-			layout->addWidget(lbBPM);
-			layout->addWidget(btnEnable);
-		}
-	}
 }
 
 void ConicalDisplay::error()

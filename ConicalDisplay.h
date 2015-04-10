@@ -29,11 +29,11 @@
 #include "StopWatch.h"
 #include "Fermenter.h"
 
-class ConicalDisplay : public QWidget {
+class ConicalDisplay : public QFrame {
 	Q_OBJECT
 public:
-	ConicalDisplay(QWidget *parent = 0);
-	ConicalDisplay(QString, QWidget *parent = 0);
+	ConicalDisplay(QWidget *parent = 0, Qt::WindowFlags f = 0);
+	ConicalDisplay(QString, QWidget *parent = 0, Qt::WindowFlags f = 0);
 	virtual ~ConicalDisplay();
 	void setName(QString n) { name = n; }
 
@@ -49,11 +49,11 @@ signals:
 
 protected:
 	void showEvent(QShowEvent*);
+	void paintEvent(QPaintEvent*);
 
 private:
 	void setBackground(int);
 
-	QHBoxLayout *layout;
 	QLabel *lbTemp;
 	QLabel *lbBPM;
 	QLabel *lbName;

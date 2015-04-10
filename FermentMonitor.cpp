@@ -22,15 +22,15 @@
 
 #include "FermentMonitor.h"
 
-FermentMonitor::FermentMonitor(QWidget *parent) : QWidget(parent) {
+FermentMonitor::FermentMonitor(QWidget *parent, Qt::WindowFlags f) : QFrame(parent, f) {
 	temps = new TempMonitor();
 	restHandler = new RestServer(80);
 	thermostat = new Thermostat();
 	leftConical = new ConicalDisplay(this);
 	rightConical = new ConicalDisplay(this);
 
-	leftConical->setGeometry(0, 0, 800, 120);
-	rightConical->setGeometry(0, 120, 800, 120);
+	leftConical->setGeometry(5, 5, 790, 150);
+	rightConical->setGeometry(5, 160, 790, 150);
 
 	lbBoxTemp = new QLabel(this);
 	lbBoxTemp->setNum(0.0);
@@ -38,7 +38,7 @@ FermentMonitor::FermentMonitor(QWidget *parent) : QWidget(parent) {
 	lbRightTime = new QLabel(this);
 
 	wBaseBar = new QWidget(this);
-	wBaseBar->setGeometry(0, 360, 800, 120);
+	wBaseBar->setGeometry(5, 360, 790, 115);
 
 	layout = new QHBoxLayout(this);
 	layout->addWidget(lbBoxTemp);
@@ -47,7 +47,13 @@ FermentMonitor::FermentMonitor(QWidget *parent) : QWidget(parent) {
 
 	wBaseBar->setLayout(layout);
 
-	connect(thermostat, SIGNAL(thermostatAlarm(enum ThermAlarm)), this, SLOT(thermostatAlarm(enum ThermAlarm)));
+	QPalette pal(palette());
+	pal.setColor(QPalette::Background, Qt::gray);
+	setAutoFillBackground(true);
+	setPalette(pal);
+	wBaseBar->setStyleSheet(".QWidget{background-color: white; border-radius: 5px;}");
+
+	connect(thermostat, SIGNAL(thermostatAlarm(enum ThermAlarms)), this, SLOT(thermostatAlarm(enum ThermAlarms)));
 	connect(this, SIGNAL(updateLeftBPM(int)), leftConical, SLOT(updateBPM(int)));
 	connect(this, SIGNAL(updateLeftTemp(double)), leftConical, SLOT(updateTemp(double)));
 	connect(this, SIGNAL(leftConicalError()), leftConical, SLOT(error()));
@@ -60,6 +66,11 @@ FermentMonitor::FermentMonitor(QWidget *parent) : QWidget(parent) {
 
 FermentMonitor::~FermentMonitor()
 {
+}
+
+void FermentMonitor::thermostatAlarm(enum ThermAlarms)
+{
+
 }
 
 void FermentMonitor::bubbleCount(QString name, int count)
@@ -103,9 +114,10 @@ bool FermentMonitor::init()
 	QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
 	QXmlStreamReader xml;
 	QString xmlFile = env.value("HOME");
-	QFile configFile(xmlFile + ".config/fermentmon.xml");
+	QFile configFile(xmlFile + "/.config/fermentmonitor.xml");
 
 	if (!configFile.open(QIODevice::ReadOnly|QIODevice::Text)) {
+		qDebug() << "Error opening " << configFile.fileName() << " with error " << configFile.error();
 		return false;
 	}
 	xml.setDevice(&configFile);

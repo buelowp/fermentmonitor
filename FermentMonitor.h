@@ -25,6 +25,7 @@
 
 #include <QtCore>
 #include <QtWidgets>
+#include <QDebug>
 
 #include "RestServer.h"
 #include "BubbleMonitor.h"
@@ -32,10 +33,10 @@
 #include "Thermostat.h"
 #include "ConicalDisplay.h"
 
-class FermentMonitor : public QWidget {
+class FermentMonitor : public QFrame {
 	Q_OBJECT
 public:
-	FermentMonitor(QWidget *parent = 0);
+	FermentMonitor(QWidget *parent = 0, Qt::WindowFlags f = 0);
 	virtual ~FermentMonitor();
 	bool init();
 
@@ -43,6 +44,7 @@ public slots:
 	void bubbleCount(QString, int);
 	void tempChange(QString, double);
 	void fermentationComplete(QString);
+	void thermostatAlarm(enum ThermAlarms);
 
 signals:
 	void updateLeftBPM(int);

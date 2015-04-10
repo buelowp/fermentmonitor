@@ -21,7 +21,7 @@
  */
 
 #include <QtCore>
-#include <QGuiApplication>
+#include <QApplication>
 #include "FermentMonitor.h"
 
 /**
@@ -29,8 +29,8 @@
  */
 int main(int argc, char **argv)
 {
-    QGuiApplication app(argc, argv);
-    QStringList argList = QCoreApplication::arguments();
+    QApplication app(argc, argv);
+    QStringList argList = QApplication::arguments();
     FermentMonitor monitor;
 
     if (!monitor.init())
