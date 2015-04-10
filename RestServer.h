@@ -26,7 +26,6 @@
 #include <QtCore>
 #include <QObject>
 #include <QtNetwork>
-#include <QTcpServer>
 
 #define RS_HTTP_GET		1
 #define RS_HTTP_POST	2
@@ -40,10 +39,10 @@ public:
 	RestServer(quint16 port, QObject *parent = 0) : QTcpServer(parent)
 	{
 		listen(QHostAddress::Any, port);
+		connect(this, SIGNAL(newConnection()), this, SLOT(acceptConnection()));
 	}
 	virtual ~RestServer();
 
-	void incomingConnect(int);
 	void pause();
 	void resume();
 	int decodeRequestType(QString);
@@ -57,6 +56,7 @@ public:
 private slots:
 	void readClient();
 	void discardClient();
+	void acceptConnection();
 
 private:
 	void decodeGetRequest(QStringList&);

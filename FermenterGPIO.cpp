@@ -39,7 +39,7 @@ bool FermenterGPIO::setGPIO(QString gpio)
 		return false;
 
 	qfswGPIO = new QFileSystemWatcher();
-	qfswGPIO->addPath(qfValue.fileName());
+	qfswGPIO->addPath(qfValue->fileName());
 	connect(qfswGPIO, SIGNAL(fileChanged(QString)), this, SLOT(changed(QString)));
 
 	return true;
@@ -53,7 +53,7 @@ void FermenterGPIO::setDirection(QByteArray dir)
 	qfDirection->write(dir);
 }
 
-void FermenterGPIO::changed(QString file)
+void FermenterGPIO::changed(QString)
 {
 	QByteArray ba = qfValue->readAll();
 	emit valueChanged(ba);
@@ -71,4 +71,9 @@ bool FermenterGPIO::checkValue(QString val)
 QByteArray FermenterGPIO::getValue()
 {
 	return qfValue->readAll();
+}
+
+void FermenterGPIO::setValue(QByteArray ba)
+{
+	qfValue->write(ba.constData());
 }

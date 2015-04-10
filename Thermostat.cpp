@@ -45,15 +45,6 @@ Thermostat::~Thermostat() {
 	// TODO Auto-generated destructor stub
 }
 
-enum ThermAlarms Thermostat::setTargetTemp(double t)
-{
-	if (!validTemp(t)) {
-		return INVALIDTEMP;
-	}
-	dTargetFermTemp = t;
-	return NOERROR;
-}
-
 enum ThermAlarms Thermostat::setTargetTemp(int t)
 {
 	double newt = (double)t;
@@ -138,7 +129,7 @@ void Thermostat::currFermOneTemp(double t)
 
 	dFermOneTemp = t;
 
-	if (activeFermenters() == 2) {
+	if (iActiveFermenters == 2) {
 		if (t < (dFermTwoTemp - 2) || t > (dFermTwoTemp + 2)) {
 			emit thermostatAlarm(FERMENTERMISMATCH);
 			return;
@@ -166,7 +157,7 @@ void Thermostat::currFermTwoTemp(double t)
 
 	dFermTwoTemp = t;
 
-	if (activeFermenters() == 2) {
+	if (iActiveFermenters == 2) {
 		if (t < (dFermOneTemp - 2) || t > (dFermOneTemp + 2)) {
 			emit thermostatAlarm(FERMENTERMISMATCH);
 			return;
@@ -194,6 +185,7 @@ void Thermostat::currBoxTemp(double t)
 		shutdown();
 		emit thermostatAlarm(HIGHTEMP);
 	}
+	dBoxTemp = t;
 }
 
 void Thermostat::runCooler()
@@ -221,7 +213,7 @@ void Thermostat::runHeater()
 		return;
 
 	if (bCoolerIsRunning) {
-		emit thermostatAlarm(COOLERRUNING);
+		emit thermostatAlarm(COOLERRUNNING);
 		return;
 	}
 
@@ -258,4 +250,11 @@ void Thermostat::coolerSafeToShutdown()
 		bShutdownOnTimeout = false;
 	}
 	bCoolerTimeout = true;
+}
+
+void Thermostat::shutdown()
+{
+	stopCooler();
+	stopHeater();
+	bShutdownOnTimeout = false;
 }

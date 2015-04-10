@@ -23,18 +23,19 @@
 #ifndef FERMENTMONITOR_H_
 #define FERMENTMONITOR_H_
 
+#include <QtCore>
+#include <QtWidgets>
+
 #include "RestServer.h"
 #include "BubbleMonitor.h"
 #include "TempMonitor.h"
 #include "Thermostat.h"
 #include "ConicalDisplay.h"
 
-#include <QtWidgets>
-
-class FermentMonitor : public QFrame {
+class FermentMonitor : public QWidget {
 	Q_OBJECT
 public:
-	FermentMonitor(QFrame *parent = 0);
+	FermentMonitor(QWidget *parent = 0);
 	virtual ~FermentMonitor();
 	bool init();
 
@@ -59,6 +60,7 @@ private:
 	ConicalDisplay *leftConical;
 	ConicalDisplay *rightConical;
 	QHBoxLayout *layout;
+	QWidget *wBaseBar;
 	QLabel *lbBoxTemp;
 	QLabel *lbLeftTime;
 	QLabel *lbRightTime;

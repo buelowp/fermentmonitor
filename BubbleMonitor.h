@@ -28,7 +28,7 @@
 class BubbleMonitor : public QThread {
 	Q_OBJECT
 public:
-	BubbleMonitor(QString GPIO, QString name, QObject *parent = 0);
+	BubbleMonitor(QString GPIO, QString name);
 	virtual ~BubbleMonitor();
 
 	bool isOpen();
@@ -40,6 +40,9 @@ signals:
 	void bubbleCount(QString, int);
 	void fermentationComplete(QString);
 	void error(QString);
+
+public slots:
+	void stop();
 
 protected slots:
 	void fileChanged(QString);

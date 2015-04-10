@@ -26,15 +26,6 @@ RestServer::~RestServer() {
 	// TODO Auto-generated destructor stub
 }
 
-void RestServer::incomingConnection(int socket)
-{
-     QTcpSocket* s = new QTcpSocket(this);
-     connect(s, SIGNAL(readyRead()), this, SLOT(readClient()));
-     connect(s, SIGNAL(disconnected()), this, SLOT(discardClient()));
-     connect(this, SIGNAL(newGetRequest(QVector<QStringList>)), this, SLOT(handleGetRequest(QVector<QStringList>)));
-     s->setSocketDescriptor(socket);
-}
-
 int RestServer::decodeRequestType(QString rqst)
 {
     if (rqst == "GET") {
@@ -55,9 +46,18 @@ int RestServer::decodeRequestType(QString rqst)
     return -1;
 }
 
+void RestServer::acceptConnection()
+{
+	QTcpSocket *socket = nextPendingConnection();
+	if (socket) {
+	     connect(socket, SIGNAL(readyRead()), this, SLOT(readClient()));
+	     connect(socket, SIGNAL(disconnected()), this, SLOT(discardClient()));
+	     connect(this, SIGNAL(newGetRequest(QVector<QStringList>)), this, SLOT(handleGetRequest(QVector<QStringList>)));
+	}
+}
+
 void RestServer::handleGetRequest(QVector<QStringList> clientRequest)
 {
-	QTcpSocket *socket = (QTcpSocket*)sender();
 	QStringList newRequest = clientRequest[0];
 	QString api = newRequest[1];
 	int pos;
@@ -81,12 +81,8 @@ void RestServer::sendTempResponse(double temp)
 	QTcpSocket *socket = (QTcpSocket*)sender();
 
 	QTextStream os(socket);
-	QStringList response;
-	response << "HTTP/1.0 200 OK\r\nContent-Type: text/html; charset=\"utf-8\"\r\n\r\n";
-	response << "Temperature: " << temp << "\n";
-
     os.setAutoDetectUnicode(true);
-    os << response;
+    os << "HTTP/1.0 200 OK\r\nContent-Type: text/html; charset=\"utf-8\"\r\nTemperature: " << temp << "\r\n\r\n";
 }
 
 void RestServer::readClient()
@@ -103,7 +99,7 @@ void RestServer::readClient()
         }
         clientRequest.push_back(tokens);
     }
-    if (requestType = RS_HTTP_GET) {
+    if (requestType == RS_HTTP_GET) {
     	handleGetRequest(clientRequest);
     }
 }
@@ -112,4 +108,32 @@ void RestServer::discardClient()
 {
     QTcpSocket* socket = (QTcpSocket*)sender();
     socket->deleteLater();
+}
+
+void RestServer::setBubbleCount(QString n, int i)
+{
+	if (bubbleCount.contains(n)) {
+		bubbleCount[n] = i;
+	}
+}
+
+void RestServer::setBubblesPerMin(QString n, int i)
+{
+	if (bubblesPerMin.contains(n)) {
+		bubblesPerMin[n] = i;
+	}
+}
+
+void RestServer::setFermentState(QString n, bool s)
+{
+	if (fermentState.contains(n)) {
+		fermentState[n] = s;
+	}
+}
+
+void RestServer::setTemp(QString n, double t)
+{
+	if (probes.contains(n)) {
+		probes[n] = t;
+	}
 }

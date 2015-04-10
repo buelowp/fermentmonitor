@@ -24,15 +24,18 @@
 #define CONICALDISPLAY_H_
 
 #include <QtCore>
-#include <QtGui>
+#include <QtWidgets>
+
 #include "StopWatch.h"
 #include "Fermenter.h"
 
-class ConicalDisplay : public QFrame {
+class ConicalDisplay : public QWidget {
 	Q_OBJECT
 public:
-	ConicalDisplay(QString, QObject *parent = 0);
+	ConicalDisplay(QWidget *parent = 0);
+	ConicalDisplay(QString, QWidget *parent = 0);
 	virtual ~ConicalDisplay();
+	void setName(QString n) { name = n; }
 
 public slots:
 	void updateBPM(int);
@@ -57,6 +60,7 @@ private:
 	QPushButton *btnEnable;
 	QTimer *tUpdate;
 	StopWatch *sw;
+	QString name;
 };
 
 #endif /* CONICALDISPLAY_H_ */

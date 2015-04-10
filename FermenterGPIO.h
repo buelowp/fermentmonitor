@@ -29,9 +29,9 @@ protected slots:
 	void changed(QString);
 
 private:
-	QFileSystemWatcher qfswGPIO;
-	QFile qfDirection;
-	QFile qfValue;
+	QFileSystemWatcher *qfswGPIO;
+	QFile *qfDirection;
+	QFile *qfValue;
 };
 
 #endif /* FERMENTERGPIO_H_ */

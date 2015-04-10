@@ -22,8 +22,8 @@
 
 #include "FermentMonitor.h"
 
-FermentMonitor::FermentMonitor(QFrame *parent) : QFrame(parent) {
-	temps = new TempMonitor(this);
+FermentMonitor::FermentMonitor(QWidget *parent) : QWidget(parent) {
+	temps = new TempMonitor();
 	restHandler = new RestServer(80);
 	thermostat = new Thermostat();
 	leftConical = new ConicalDisplay(this);
@@ -37,11 +37,15 @@ FermentMonitor::FermentMonitor(QFrame *parent) : QFrame(parent) {
 	lbLeftTime = new QLabel(this);
 	lbRightTime = new QLabel(this);
 
+	wBaseBar = new QWidget(this);
+	wBaseBar->setGeometry(0, 360, 800, 120);
+
 	layout = new QHBoxLayout(this);
-	layout->setGeometry(0, 360, 800, 120);
 	layout->addWidget(lbBoxTemp);
 	layout->addWidget(lbLeftTime);
 	layout->addWidget(lbRightTime);
+
+	wBaseBar->setLayout(layout);
 
 	connect(thermostat, SIGNAL(thermostatAlarm(enum ThermAlarm)), this, SLOT(thermostatAlarm(enum ThermAlarm)));
 	connect(this, SIGNAL(updateLeftBPM(int)), leftConical, SLOT(updateBPM(int)));
@@ -112,7 +116,7 @@ bool FermentMonitor::init()
 			QString tag = xml.name().toString();
 			if (tag == "gpio") {
 				QXmlStreamAttributes attributes = xml.attributes();
-				QString attribute = attributes.value("name");
+				QString attribute = attributes.value("name").toString();
 				if (attribute == "heater") {
 					thermostat->addHeaterGPIO(attributes.value("path").toString());
 				}
@@ -122,26 +126,33 @@ bool FermentMonitor::init()
 			}
 			if (tag == "thermometer") {
 				QXmlStreamAttributes attributes = xml.attributes();
-				QString name = attributes.value("name");
-				QString path = attributes.value("path");
+				QString name = attributes.value("name").toString();
+				QString path = attributes.value("path").toString();
 				temps->addDevice(name, path);
 			}
 			if (tag == "holdtemp") {
 				QXmlStreamAttributes attributes = xml.attributes();
-				thermostat->setFermenterTemp(attributes.value("temp").toDouble());
+				thermostat->currBoxTemp(attributes.value("temp").toDouble());
 			}
 			if (tag == "counter") {
 				QXmlStreamAttributes attributes = xml.attributes();
-				BubbleMonitor *bm = new BubbleMonitor(attributes.value("path"), attributes.value("name"));
+				BubbleMonitor *bm = new BubbleMonitor(attributes.value("path").toString(), attributes.value("name").toString());
 				if (bm->isOpen()) {
-					bubbleCounters.insert(attributes.value("name"), bm);
+					bubbleCounters.insert(attributes.value("name").toString(), bm);
 					connect(bm, SIGNAL(bubbleCount(QString, int)), this, SLOT(bubbleCount(QString, int)));
 					connect(bm, SIGNAL(fermentationComplete(QString)), this, SLOT(fementationComplete(QString)));
 				}
 			}
 			if (tag == "conical") {
-
+				QXmlStreamAttributes attributes = xml.attributes();
+				if (attributes.value("which") == "leftconical") {
+					leftConical->setName(attributes.value("name").toString());
+				}
+				if (attributes.value("which") == "rightconical") {
+					rightConical->setName(attributes.value("name").toString());
+				}
 			}
 		}
 	}
+	return true;
 }

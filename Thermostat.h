@@ -40,6 +40,8 @@ public:
 	ThermAlarms setTargetTemp(double);
 	ThermAlarms setTargetTemp(int);
 	void shutdown();
+	void addFermenter() { iActiveFermenters++; }
+	void removeFermenter() { iActiveFermenters--; }
 
 signals:
 	void heatState(bool);
@@ -47,7 +49,6 @@ signals:
 	void thermostatAlarm(enum ThermAlarms);
 
 public slots:
-	void setFermenterTemp(double);
 	void currBoxTemp(double);
 	void currFermOneTemp(double);
 	void currFermTwoTemp(double);
@@ -62,7 +63,6 @@ private:
 	void stopHeater();
 	void checkTempError(double);
 	bool validTemp(double);
-	int activeFermenters();
 	bool coolerIsRunning();
 	bool heaterIsRunning();
 
@@ -80,6 +80,7 @@ private:
 	bool bCoolerEnabled;
 	bool bCoolerTimeout;
 	bool bShutdownOnTimeout;
+	int iActiveFermenters;
 };
 
 #endif /* THERMOSTAT_H_ */

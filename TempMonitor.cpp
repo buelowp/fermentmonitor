@@ -22,7 +22,7 @@
 
 #include "TempMonitor.h"
 
-TempMonitor::TempMonitor(QObject *parent) : QObject(parent) {
+TempMonitor::TempMonitor() {
 	// TODO Auto-generated constructor stub
 	devicePath = "/sys/bus/w1/devices";
 	bEnabled = true;
@@ -34,14 +34,15 @@ TempMonitor::~TempMonitor() {
 
 void TempMonitor::run()
 {
-	QHashIterator<QString, QFile> i(probes);
+	QHashIterator<QString, QString> i(probes);
+	QString s;
 	int pos;
 
 	while (bEnabled) {
 		while (i.hasNext()) {
 			i.next();
-			QFile f = i.value();
-			QString s = i.key();
+			QFile f(i.value());
+			s = i.key();
 
 			QByteArray ba = f.readAll();
 			if ((pos = ba.indexOf("t=")) != -1) {
@@ -69,10 +70,10 @@ int TempMonitor::populateDeviceTree()
 	for (int i = 0; i < entries.size(); i++) {
 		QString probe = entries.at(i);
 		if (probe.left(3) == "28-") {
-			QFile f(probe.absolutePath() + "/w1_slave");
+			QFile f(probe + "/w1_slave");
 			if (f.exists()) {
 				if (!probes.contains(probe)) {
-					probes.insert(probe, f);
+					probes.insert(probe, f.fileName());
 				}
 			}
 		}
@@ -86,7 +87,7 @@ void TempMonitor::addDevice(QString name, QString path)
 
 	if (probe.exists()) {
 		if (!probes.contains(path)) {
-			probes.insert(name, probe);
+			probes.insert(name, path);
 		}
 	}
 }

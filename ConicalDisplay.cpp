@@ -22,8 +22,25 @@
 
 #include "ConicalDisplay.h"
 
-ConicalDisplay::ConicalDisplay(QString name, QObject *parent) : QObject(parent)
+ConicalDisplay::ConicalDisplay(QWidget *parent) : QWidget(parent)
 {
+	layout = NULL;
+	lbName = new QLabel(this);
+	lbTemp = new QLabel(this);
+	lbTemp->setNum(0.0);
+	lbBPM = new QLabel(this);
+	lbBPM->setNum(0);
+	btnEnable = new QPushButton("Enable", this);
+	tUpdate = new QTimer(this);
+	sw = new StopWatch();
+
+	connect(tUpdate, SIGNAL(timeout()), this, SLOT(update()));
+	connect(btnEnable, SIGNAL(pressed()), this, SLOT(enable()));
+}
+
+ConicalDisplay::ConicalDisplay(QString n, QWidget *parent) : QWidget(parent)
+{
+	name = n;
 	layout = NULL;
 	lbName = new QLabel(name, this);
 	lbTemp = new QLabel(this);
@@ -97,4 +114,14 @@ void ConicalDisplay::setBackground(int state)
 	}
 	setAutoFillBackground(true);
 	setPalette(pal);
+}
+
+void ConicalDisplay::updateTemp(double t)
+{
+	lbTemp->setNum(t);
+}
+
+void ConicalDisplay::updateBPM(int b)
+{
+	lbBPM->setNum(b);
 }

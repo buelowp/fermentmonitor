@@ -22,7 +22,7 @@
 
 #include "BubbleMonitor.h"
 
-BubbleMonitor::BubbleMonitor(QString GPIO, QString Name, QObject *parent) : QObject(parent) {
+BubbleMonitor::BubbleMonitor(QString GPIO, QString Name) {
 	bubbles = 0;
 	gpioFile = new QFile(GPIO);
 	name = Name;
@@ -58,7 +58,7 @@ void BubbleMonitor::addEvent()
 	events.enqueue(lastEvent);
 }
 
-void BubbleMonitor::fileChanged(QString file)
+void BubbleMonitor::fileChanged(QString)
 {
 	QByteArray ba;
 
@@ -73,7 +73,7 @@ void BubbleMonitor::fileChanged(QString file)
 void BubbleMonitor::run()
 {
 	QFileSystemWatcher *fw = new QFileSystemWatcher(this);
-	fw.addPath(gpioFile->fileName());
+	fw->addPath(gpioFile->fileName());
 	connect(fw, SIGNAL(fileChanged(QString)), this, SLOT(fileChanged(QString)));
 
 	//* We have to wait until fementation starts before we can do updates or spin in the check loop
@@ -86,9 +86,14 @@ void BubbleMonitor::run()
 
 		// If we haven't had a bubble event in 12 hours, we're done
 		if ((lastEvent.toTime_t() - now.toTime_t()) > 43200) {
-			emit fermentationComplete(pin);
+			emit fermentationComplete(name);
 			events.clear();
 		}
 		sleep(1);
 	}
 }
+
+void BubbleMonitor::stop()
+{
+}
+

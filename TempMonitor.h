@@ -28,7 +28,7 @@
 class TempMonitor : public QThread {
 	Q_OBJECT
 public:
-	TempMonitor(QObject *parent = 0);
+	TempMonitor();
 	virtual ~TempMonitor();
 
 	void addDevice(QString, QString);
@@ -41,7 +41,7 @@ signals:
 	void error(QString);
 
 private:
-	QHash<QString, QFile> probes;
+	QHash<QString, QString> probes;
 	QString devicePath;
 	bool bEnabled;
 };
