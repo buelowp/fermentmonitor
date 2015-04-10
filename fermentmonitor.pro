@@ -3,6 +3,9 @@ CONFIG += thread gui
 TARGET = fermentmonitor
 QT += network widgets
 
+MOC_DIR = .moc
+OBJECTS_DIR = .obj
+
 SOURCES = main.cpp \
 	BubbleMonitor.cpp \
 	ConicalDisplay.cpp \
