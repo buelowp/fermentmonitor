@@ -27,4 +27,9 @@ enum ThermAlarms {
 #define HEATERRELAY		1
 #define COOLERRELAY		2
 
+#define BACKGROUND_ERROR	0
+#define BACKGROUND_RUNNING	1
+#define BACKGROUND_IDLE		2
+#define BACKGROUND_COMPLETE	3
+
 #endif /* FERMENTER_H_ */

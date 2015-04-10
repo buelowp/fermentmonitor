@@ -34,8 +34,8 @@ TempMonitor::~TempMonitor() {
 
 void TempMonitor::run()
 {
-	populateDeviceTree();
 	QHashIterator<QString, QFile> i(probes);
+	int pos;
 
 	while (bEnabled) {
 		while (i.hasNext()) {
@@ -78,4 +78,15 @@ int TempMonitor::populateDeviceTree()
 		}
 	}
 	return probes.size();
+}
+
+void TempMonitor::addDevice(QString name, QString path)
+{
+	QFile probe(path);
+
+	if (probe.exists()) {
+		if (!probes.contains(path)) {
+			probes.insert(name, probe);
+		}
+	}
 }

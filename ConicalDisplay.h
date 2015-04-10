@@ -1,5 +1,5 @@
 /*
- * BubbleMonitor.h
+ * ConicalDisplay.h
  *
  *  This file is part of FermentMonitor.
  *
@@ -16,43 +16,47 @@
  *  You should have received a copy of the GNU General Public License
  *  along with FermentMonitor.  If not, see <http://www.gnu.org/licenses/>.
  *
- *  Created on: Feb 2, 2015
- *      Author: pete
+ *  Created on: April 10, 2015
+ *      Author: Peter Buelow (goballstate at gmail)
  */
 
-#ifndef BUBBLEMONITOR_H_
-#define BUBBLEMONITOR_H_
+#ifndef CONICALDISPLAY_H_
+#define CONICALDISPLAY_H_
 
 #include <QtCore>
+#include <QtGui>
+#include "StopWatch.h"
+#include "Fermenter.h"
 
-class BubbleMonitor : public QThread {
+class ConicalDisplay : public QFrame {
 	Q_OBJECT
 public:
-	BubbleMonitor(QString GPIO, QString name, QObject *parent = 0);
-	virtual ~BubbleMonitor();
+	ConicalDisplay(QString, QObject *parent = 0);
+	virtual ~ConicalDisplay();
 
-	bool isOpen();
-	void run();
-	int bubblesPerMinute() { return events.size(); }
-	QString getName() { return name; }
+public slots:
+	void updateBPM(int);
+	void updateTemp(double);
+	void error();
+	void enable();
+	void update();
 
 signals:
-	void bubbleCount(QString, int);
-	void fermentationComplete(QString);
-	void error(QString);
+	void updateRuntime(QString);
 
-protected slots:
-	void fileChanged(QString);
+protected:
+	void showEvent(QShowEvent*);
 
 private:
-	void addEvent();
+	void setBackground(int);
 
-	int bubbles;
-	QString name;
-	QFile *gpioFile;
-	QFileSystemWatcher* watcher;
-	QQueue<QDateTime> events;
-	QDateTime lastEvent;
+	QHBoxLayout *layout;
+	QLabel *lbTemp;
+	QLabel *lbBPM;
+	QLabel *lbName;
+	QPushButton *btnEnable;
+	QTimer *tUpdate;
+	StopWatch *sw;
 };
 
-#endif /* BUBBLEMONITOR_H_ */
+#endif /* CONICALDISPLAY_H_ */

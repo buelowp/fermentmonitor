@@ -37,7 +37,8 @@ public:
 	void setDirection(int);
 	bool addCoolerGPIO(QString);
 	bool addHeaterGPIO(QString);
-	ThermAlarms setTargetTemps(double, double);
+	ThermAlarms setTargetTemp(double);
+	ThermAlarms setTargetTemp(int);
 	void shutdown();
 
 signals:

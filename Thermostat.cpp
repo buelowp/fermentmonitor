@@ -45,6 +45,26 @@ Thermostat::~Thermostat() {
 	// TODO Auto-generated destructor stub
 }
 
+enum ThermAlarms Thermostat::setTargetTemp(double t)
+{
+	if (!validTemp(t)) {
+		return INVALIDTEMP;
+	}
+	dTargetFermTemp = t;
+	return NOERROR;
+}
+
+enum ThermAlarms Thermostat::setTargetTemp(int t)
+{
+	double newt = (double)t;
+
+	if (!validTemp(newt)) {
+		return INVALIDTEMP;
+	}
+	dTargetFermTemp = newt;
+	return NOERROR;
+}
+
 bool Thermostat::addHeaterGPIO(QString gpio)
 {
 	pHeater = new FermenterGPIO(this);
@@ -174,7 +194,6 @@ void Thermostat::currBoxTemp(double t)
 		shutdown();
 		emit thermostatAlarm(HIGHTEMP);
 	}
-
 }
 
 void Thermostat::runCooler()

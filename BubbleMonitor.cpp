@@ -22,7 +22,7 @@
 
 #include "BubbleMonitor.h"
 
-BubbleMonitor::BubbleMonitor(QString GPIO, QString Name, QThread *parent) : QThread(parent) {
+BubbleMonitor::BubbleMonitor(QString GPIO, QString Name, QObject *parent) : QObject(parent) {
 	bubbles = 0;
 	gpioFile = new QFile(GPIO);
 	name = Name;
@@ -31,6 +31,14 @@ BubbleMonitor::BubbleMonitor(QString GPIO, QString Name, QThread *parent) : QThr
 
 BubbleMonitor::~BubbleMonitor() {
 	delete watcher;
+}
+
+bool BubbleMonitor::isOpen()
+{
+	if (!gpioFile->open(QIODevice::ReadOnly|QIODevice::Text)) {
+		return false;
+	}
+	return true;
 }
 
 void BubbleMonitor::addEvent()

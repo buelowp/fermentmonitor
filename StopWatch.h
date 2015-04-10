@@ -1,5 +1,5 @@
 /*
- * BubbleMonitor.h
+ *  StopWatch.h
  *
  *  This file is part of FermentMonitor.
  *
@@ -16,43 +16,31 @@
  *  You should have received a copy of the GNU General Public License
  *  along with FermentMonitor.  If not, see <http://www.gnu.org/licenses/>.
  *
- *  Created on: Feb 2, 2015
- *      Author: pete
+ *  Created on: April 10, 2015
+ *      Author: Peter Buelow (goballstate at gmail)
  */
 
-#ifndef BUBBLEMONITOR_H_
-#define BUBBLEMONITOR_H_
+#ifndef STOPWATCH_H_
+#define STOPWATCH_H_
 
 #include <QtCore>
+#include <time.h>
 
-class BubbleMonitor : public QThread {
-	Q_OBJECT
+class StopWatch {
 public:
-	BubbleMonitor(QString GPIO, QString name, QObject *parent = 0);
-	virtual ~BubbleMonitor();
+	StopWatch();
+	virtual ~StopWatch();
 
-	bool isOpen();
-	void run();
-	int bubblesPerMinute() { return events.size(); }
-	QString getName() { return name; }
-
-signals:
-	void bubbleCount(QString, int);
-	void fermentationComplete(QString);
-	void error(QString);
-
-protected slots:
-	void fileChanged(QString);
+	void start();
+	void stop();
+	void clear();
+	time_t elapsedSeconds();
+	QString toString();
+	bool isRunning() { return bIsRunning; }
 
 private:
-	void addEvent();
-
-	int bubbles;
-	QString name;
-	QFile *gpioFile;
-	QFileSystemWatcher* watcher;
-	QQueue<QDateTime> events;
-	QDateTime lastEvent;
+	bool bIsRunning;
+	time_t mStartTime;
 };
 
-#endif /* BUBBLEMONITOR_H_ */
+#endif /* STOPWATCH_H_ */

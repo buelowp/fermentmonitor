@@ -26,10 +26,13 @@
 #include <QtCore>
 
 class TempMonitor : public QThread {
+	Q_OBJECT
 public:
 	TempMonitor(QObject *parent = 0);
 	virtual ~TempMonitor();
 
+	void addDevice(QString, QString);
+	int populateDeviceTree();
 	void run();
 	void setDevicePath(QString s) { devicePath = s; }
 
@@ -38,8 +41,6 @@ signals:
 	void error(QString);
 
 private:
-	int populateDeviceTree();
-
 	QHash<QString, QFile> probes;
 	QString devicePath;
 	bool bEnabled;

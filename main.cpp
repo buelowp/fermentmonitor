@@ -24,19 +24,18 @@
 #include <QCoreApplication>
 #include "FermentMonitor.h"
 
+/**
+ * int main(int argc, char **argv)
+ */
 int main(int argc, char **argv)
 {
     QApplication app(argc, argv);
     QStringList argList = QCoreApplication::arguments();
     FermentMonitor monitor;
 
-    for (int i = 0; i < argList.size(); i++) {
-    	if (argList[i] == "-g") {
-    		QStringList gpio = argList[i+1].split(',');
-    		monitor.addGPIO(gpio[0], gpio[1]);
-    		i++;
-    	}
-    }
+    if (!monitor.init())
+    	return -1;
+
     monitor.setGeometry(0, 0, 800, 480);
     monitor.show();
 

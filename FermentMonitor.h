@@ -27,6 +27,7 @@
 #include "BubbleMonitor.h"
 #include "TempMonitor.h"
 #include "Thermostat.h"
+#include "ConicalDisplay.h"
 
 #include <QtWidgets>
 
@@ -35,19 +36,34 @@ class FermentMonitor : public QFrame {
 public:
 	FermentMonitor(QFrame *parent = 0);
 	virtual ~FermentMonitor();
-
-	void addGPIO(QString, QString);
+	bool init();
 
 public slots:
 	void bubbleCount(QString, int);
 	void tempChange(QString, double);
 	void fermentationComplete(QString);
 
+signals:
+	void updateLeftBPM(int);
+	void updateLeftTemp(double);
+	void leftConicalError();
+	void updateRightBPM(int);
+	void updateRightTemp(double);
+	void rightConicalError();
+
 private:
 	RestServer *restHandler;
 	QHash<QString, BubbleMonitor*> bubbleCounters;
-	TempMonitor *therms;
+	TempMonitor *temps;
 	Thermostat *thermostat;
+	ConicalDisplay *leftConical;
+	ConicalDisplay *rightConical;
+	QHBoxLayout *layout;
+	QLabel *lbBoxTemp;
+	QLabel *lbLeftTime;
+	QLabel *lbRightTime;
+	QTimer *tLeftTimer;
+	QTimer *tRightTimer;
 };
 
 #endif /* FERMENTMONITOR_H_ */

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<fermenter>
+ <conical name="49 porter" type="porter" which="leftconical" />
+ <conical name="Belmont Ave Amber" type="ale" which="rightconical" />
+ <gpio name="heater" path="/sys/" />
+ <gpio name="cooler" path="/sys/" />
+ <thermometer name="chamber" path="/sys/" />
+ <thermometer name="leftconical" path="/sys/" />
+ <thermometer name="rightconical" path="/sys/" />
+ <thermometer name="external" path="/sys/" />
+ <counter name="leftconical" path="/sys/" />
+ <counter name="rightconical" path="/sys/" />
+ <holdtemp name="conical" temp="68.0" />
+</fermenter> 
