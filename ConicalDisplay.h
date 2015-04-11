@@ -55,6 +55,7 @@ private:
 	void setBackground(int);
 
 	QLabel *lbTemp;
+	QLabel *lbHold;
 	QLabel *lbBPM;
 	QLabel *lbName;
 	QPushButton *btnEnable;

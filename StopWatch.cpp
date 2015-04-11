@@ -68,6 +68,7 @@ QString StopWatch::toString()
 	elapsed = elapsed - (3600 * hours);
 	int minutes = elapsed / 60;
 	elapsed = elapsed - (60 * minutes);
+	int seconds = elapsed % 60;
 
-	return QString("%1 days, %2:%3").arg(days).arg(hours).arg(minutes, 2, 10, QChar('0'));
+	return QString("%1 days<br>%2:%3:%4").arg(days).arg(hours).arg(minutes, 2, 10, QChar('0')).arg(seconds, 2, 10, QChar('0'));
 }

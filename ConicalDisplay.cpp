@@ -25,15 +25,19 @@
 ConicalDisplay::ConicalDisplay(QWidget *parent, Qt::WindowFlags f) : QFrame(parent, f)
 {
 	lbName = new QLabel(this);
-	lbName->setText("HELP");
+	lbName->setText("<b>A fermenting beer</b>");
 	lbName->setAlignment(Qt::AlignCenter);
 	lbName->setStyleSheet(".QLabel{font: 32pt; color: black;}");
 	lbTemp = new QLabel(this);
-	lbTemp->setText(QString("%1 F").arg((double)75.1));
-	lbTemp->setStyleSheet(".QLabel{font: 48pt; color: green; border-style: solid; border-radius: 5px; border-width: 1px;}");
+	lbTemp->setText(QString("<font style='font-size:20pt;'>Actual</font><br><font style='font-size:48pt;'>%1</font> <font style='font-size:20pt'>%2F</font>").arg((double)75.1).arg(QChar(0xB0)));
+	lbTemp->setStyleSheet(".QLabel{color: green; border-style: solid; border-radius: 5px; border-width: 1px;}");
 	lbTemp->setAlignment(Qt::AlignCenter);
+	lbHold = new QLabel(this);
+	lbHold->setText(QString("<font style='font-size:20pt;'>Target</font><br><font style='font-size:48pt;'>%1</font> <font style='font-size:20pt'>%2F</font>").arg((double)68).arg(QChar(0xB0)));
+	lbHold->setStyleSheet(".QLabel{color: black; border-style: solid; border-radius: 5px; border-width: 1px;}");
+	lbHold->setAlignment(Qt::AlignCenter);
 	lbBPM = new QLabel(this);
-	lbBPM->setText(QString("%1 BPM").arg(0));
+	lbBPM->setText(QString("<font style='font-size:42pt;'>%1</font><font style='font-size:18pt;'> BPM").arg(454));
 	lbBPM->setStyleSheet(".QLabel{font: 48pt; color: red; border-style: solid; border-radius: 5px; border-width: 1px;}");
 	lbBPM->setAlignment(Qt::AlignCenter);
 	btnEnable = new QPushButton("Start", this);
@@ -62,11 +66,6 @@ ConicalDisplay::ConicalDisplay(QString n, QWidget *parent, Qt::WindowFlags f) : 
 	tUpdate = new QTimer(this);
 	sw = new StopWatch();
 
-//	setFrameShape(QFrame::Box);
-//	setFrameStyle(QFrame::Plain);
-//	setBackground(BACKGROUND_IDLE);
-	setStyleSheet(".QFrame{background-color: red; border-radius: 5px;}");
-
 	connect(tUpdate, SIGNAL(timeout()), this, SLOT(update()));
 	connect(btnEnable, SIGNAL(pressed()), this, SLOT(enable()));
 }
@@ -79,13 +78,14 @@ void ConicalDisplay::showEvent(QShowEvent* e)
 {
 	if (e->type() == QEvent::Show) {
 		lbName->setGeometry(0, 0, 800, height() / 3);
-		lbTemp->setGeometry(10, height() / 3, 290, (((height() / 3) * 2) - 10));
-		lbBPM->setGeometry(310, height() / 3, 290, (((height() / 3) * 2) - 10));
-		btnEnable->setGeometry(610, height() / 3, 175, (((height() / 3) * 2) - 10));
+		lbHold->setGeometry(5, height() / 3, 195, (((height() / 3) * 2) - 10));
+		lbTemp->setGeometry(205, height() / 3, 195, (((height() / 3) * 2) - 10));
+		lbBPM->setGeometry(405, height() / 3, 235, (((height() / 3) * 2) - 10));
+		btnEnable->setGeometry(645, height() / 3, 140, (((height() / 3) * 2) - 10));
 	}
 }
 
-void ConicalDisplay::paintEvent(QPaintEvent *e)
+void ConicalDisplay::paintEvent(QPaintEvent*)
 {
 	QStyleOption opt;
 	opt.init(this);
@@ -139,7 +139,18 @@ void ConicalDisplay::setBackground(int state)
 
 void ConicalDisplay::updateTemp(double t)
 {
-	lbTemp->setNum(t);
+	 if (t < 50) {
+		 lbTemp->setText(QString("%1 %2F").arg(t).arg(QChar(0xB0)));
+		 lbTemp->setStyleSheet(".QLabel{font: 36pt; color: blue; border-radius: 5px; border-style: solid; border-width: 1px;}");
+	 }
+	 else if (t > 80) {
+		 lbTemp->setText(QString("%1 %2F").arg(t).arg(QChar(0xB0)));
+		 lbTemp->setStyleSheet(".QLabel{font: 36pt; color: red; border-radius: 5px; border-style: solid; border-width: 1px;}");
+	 }
+	 else {
+		 lbTemp->setText(QString("%1 %2F").arg(t).arg(QChar(0xB0)));
+		 lbTemp->setStyleSheet(".QLabel{font: 36pt; color: green; border-radius: 5px; border-style: solid; border-width: 1px;}");
+	 }
 }
 
 void ConicalDisplay::updateBPM(int b)

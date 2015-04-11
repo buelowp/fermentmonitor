@@ -29,29 +29,27 @@ FermentMonitor::FermentMonitor(QWidget *parent, Qt::WindowFlags f) : QFrame(pare
 	leftConical = new ConicalDisplay(this);
 	rightConical = new ConicalDisplay(this);
 
-	leftConical->setGeometry(5, 5, 790, 150);
-	rightConical->setGeometry(5, 160, 790, 150);
+	leftConical->setGeometry(5, 5, 790, 170);
+	rightConical->setGeometry(5, 180, 790, 170);
 
 	lbBoxTemp = new QLabel(this);
-	lbBoxTemp->setNum(0.0);
+	lbBoxTemp->setAlignment(Qt::AlignCenter);
+	lbBoxTemp->setText(QString("<font style='font-size:20pt;'>Internal</font><br><font style='font-size:52pt;'>%1</font> <font style='font-size:20pt'>%2F</font>").arg((double)75.1).arg(QChar(0xB0)));
+	lbBoxTemp->setStyleSheet(".QLabel{color: green; border-radius: 5px; border-style: solid; border-width: 1px;}");
+	lbBoxTemp->setGeometry(5, 360, 195, 115);
+	lbExternalTemp = new QLabel(this);
+	lbExternalTemp->setAlignment(Qt::AlignCenter);
+	lbExternalTemp->setText(QString("<font style='font-size:20pt;'>External</font><br><font style='font-size:52pt;'>%1</font> <font style='font-size:20pt'>%2F</font>").arg((double)75.1).arg(QChar(0xB0)));
+	lbExternalTemp->setStyleSheet(".QLabel{color: green; border-radius: 5px; border-style: solid; border-width: 1px;}");
+	lbExternalTemp->setGeometry(205, 360, 195, 115);
 	lbLeftTime = new QLabel(this);
+	lbLeftTime->setAlignment(Qt::AlignCenter);
+	lbLeftTime->setStyleSheet(".QLabel{font: 36pt; color: black; border-radius: 5px; border-style: solid; border-width: 1px;}");
+	lbLeftTime->setGeometry(405, 360, 195, 115);
 	lbRightTime = new QLabel(this);
-
-	wBaseBar = new QWidget(this);
-	wBaseBar->setGeometry(5, 360, 790, 115);
-
-	layout = new QHBoxLayout(this);
-	layout->addWidget(lbBoxTemp);
-	layout->addWidget(lbLeftTime);
-	layout->addWidget(lbRightTime);
-
-	wBaseBar->setLayout(layout);
-
-	QPalette pal(palette());
-	pal.setColor(QPalette::Background, Qt::gray);
-	setAutoFillBackground(true);
-	setPalette(pal);
-	wBaseBar->setStyleSheet(".QWidget{background-color: white; border-radius: 5px;}");
+	lbRightTime->setAlignment(Qt::AlignCenter);
+	lbRightTime->setStyleSheet(".QLabel{font: 36pt; color: black; border-radius: 5px; border-style: solid; border-width: 1px;}");
+	lbRightTime->setGeometry(605, 360, 190, 115);
 
 	connect(thermostat, SIGNAL(thermostatAlarm(enum ThermAlarms)), this, SLOT(thermostatAlarm(enum ThermAlarms)));
 	connect(this, SIGNAL(updateLeftBPM(int)), leftConical, SLOT(updateBPM(int)));
@@ -91,15 +89,28 @@ void FermentMonitor::tempChange(QString name, double temp)
 	 restHandler->setTemp(name, temp);
 	 if (name == "chamber") {
 		 thermostat->currBoxTemp(temp);
-		 lbBoxTemp->setNum(temp);
+		 if (temp < 50) {
+			 lbBoxTemp->setText(QString("%1 %2F").arg(temp).arg(QChar(0xB0)));
+			 lbBoxTemp->setStyleSheet(".QLabel{font: 36pt; color: blue; border-radius: 5px; border-style: solid; border-width: 1px;}");
+		 }
+		 else if (temp > 80) {
+			 lbBoxTemp->setText(QString("%1 %2F").arg(temp).arg(QChar(0xB0)));
+			 lbBoxTemp->setStyleSheet(".QLabel{font: 36pt; color: red; border-radius: 5px; border-style: solid; border-width: 1px;}");
+		 }
+		 else {
+			 lbBoxTemp->setText(QString("%1 %2F").arg(temp).arg(QChar(0xB0)));
+			 lbBoxTemp->setStyleSheet(".QLabel{font: 36pt; color: green; border-radius: 5px; border-style: solid; border-width: 1px;}");
+		 }
 	 }
 	 if (name == "leftconical") {
 		 emit updateLeftTemp(temp);
 		 thermostat->currFermOneTemp(temp);
+		 leftConical->updateTemp(temp);
 	 }
 	 if (name == "rightconical") {
 		 emit updateRightTemp(temp);
 		 thermostat->currFermTwoTemp(temp);
+		 rightConical->updateTemp(temp);
 	 }
 }
 

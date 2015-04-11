@@ -64,6 +64,7 @@ private:
 	QHBoxLayout *layout;
 	QWidget *wBaseBar;
 	QLabel *lbBoxTemp;
+	QLabel *lbExternalTemp;
 	QLabel *lbLeftTime;
 	QLabel *lbRightTime;
 	QTimer *tLeftTimer;
