@@ -26,19 +26,18 @@ ConicalDisplay::ConicalDisplay(QWidget *parent, Qt::WindowFlags f) : QFrame(pare
 {
 	lbName = new QLabel(this);
 	lbName->setText("<b>A fermenting beer</b>");
-	lbName->setAlignment(Qt::AlignCenter);
 	lbName->setStyleSheet(".QLabel{font: 32pt; color: black;}");
 	lbTemp = new QLabel(this);
-	lbTemp->setText(QString("<font style='font-size:20pt;'>Actual</font><br><font style='font-size:48pt;'>%1</font> <font style='font-size:20pt'>%2F</font>").arg((double)75.1).arg(QChar(0xB0)));
-	lbTemp->setStyleSheet(".QLabel{color: green; border-style: solid; border-radius: 5px; border-width: 1px;}");
+	lbTemp->setText(QString("<font style='font-size:20pt;'>Actual</font><br><font style='font-size:48pt; color:green'>%1</font> <font style='font-size:20pt'>%2F</font>").arg((double)75.1).arg(QChar(0xB0)));
+	lbTemp->setStyleSheet(".QLabel{border-style: solid; border-radius: 5px; border-width: 1px;}");
 	lbTemp->setAlignment(Qt::AlignCenter);
 	lbHold = new QLabel(this);
-	lbHold->setText(QString("<font style='font-size:20pt;'>Target</font><br><font style='font-size:48pt;'>%1</font> <font style='font-size:20pt'>%2F</font>").arg((double)68).arg(QChar(0xB0)));
+	lbHold->setText(QString("<font style='font-size:20pt;'>Target</font><br><font style='font-size:48pt;'>%1</font> <font style='font-size:20pt'>%2F</font>").arg(0).arg(QChar(0xB0)));
 	lbHold->setStyleSheet(".QLabel{color: black; border-style: solid; border-radius: 5px; border-width: 1px;}");
 	lbHold->setAlignment(Qt::AlignCenter);
 	lbBPM = new QLabel(this);
-	lbBPM->setText(QString("<font style='font-size:42pt;'>%1</font><font style='font-size:18pt;'> BPM").arg(454));
-	lbBPM->setStyleSheet(".QLabel{font: 48pt; color: red; border-style: solid; border-radius: 5px; border-width: 1px;}");
+	lbBPM->setText(QString("<font style='font-size:16pt;'>Bubbles Per Minute</font><br><font style='font-size: 48pt;'>%1").arg(454));
+	lbBPM->setStyleSheet(".QLabel{border-style: solid; border-radius: 5px; border-width: 1px;}");
 	lbBPM->setAlignment(Qt::AlignCenter);
 	btnEnable = new QPushButton("Start", this);
 	btnEnable->setStyleSheet(".QPushButton{font: 36pt; color: black; border-radius: 5px; border-style: solid; border-width: 1px;}");
@@ -47,7 +46,6 @@ ConicalDisplay::ConicalDisplay(QWidget *parent, Qt::WindowFlags f) : QFrame(pare
 
 	setFrameShape(QFrame::Box);
 	setFrameStyle(QFrame::Plain);
-	setBackground(BACKGROUND_IDLE);
 	setStyleSheet(".QFrame{background-color: red; border-radius: 5px; border-style: solid; border-width: 1px;}");
 
 	connect(tUpdate, SIGNAL(timeout()), this, SLOT(update()));
@@ -72,6 +70,16 @@ ConicalDisplay::ConicalDisplay(QString n, QWidget *parent, Qt::WindowFlags f) : 
 
 ConicalDisplay::~ConicalDisplay() {
 	// TODO Auto-generated destructor stub
+}
+
+void ConicalDisplay::setName(QString n)
+{
+	lbName->setText(QString("<b>%1</b>").arg(n));
+}
+
+void ConicalDisplay::setHoldTemp(double t)
+{
+	lbHold->setText(QString("<font style='font-size:20pt;'>Target</font><br><font style='font-size:48pt;'>%1</font> <font style='font-size:20pt'>%2F</font>").arg(t).arg(QChar(0xB0)));
 }
 
 void ConicalDisplay::showEvent(QShowEvent* e)
@@ -140,16 +148,13 @@ void ConicalDisplay::setBackground(int state)
 void ConicalDisplay::updateTemp(double t)
 {
 	 if (t < 50) {
-		 lbTemp->setText(QString("%1 %2F").arg(t).arg(QChar(0xB0)));
-		 lbTemp->setStyleSheet(".QLabel{font: 36pt; color: blue; border-radius: 5px; border-style: solid; border-width: 1px;}");
+		lbTemp->setText(QString("<font style='font-size:20pt;'>Actual</font><br><font style='font-size:48pt; color:blue'>%1</font> <font style='font-size:20pt'>%2F</font>").arg((double)75.1).arg(QChar(0xB0)));
 	 }
 	 else if (t > 80) {
-		 lbTemp->setText(QString("%1 %2F").arg(t).arg(QChar(0xB0)));
-		 lbTemp->setStyleSheet(".QLabel{font: 36pt; color: red; border-radius: 5px; border-style: solid; border-width: 1px;}");
+		lbTemp->setText(QString("<font style='font-size:20pt;'>Actual</font><br><font style='font-size:48pt; color:red'>%1</font> <font style='font-size:20pt'>%2F</font>").arg((double)75.1).arg(QChar(0xB0)));
 	 }
 	 else {
-		 lbTemp->setText(QString("%1 %2F").arg(t).arg(QChar(0xB0)));
-		 lbTemp->setStyleSheet(".QLabel{font: 36pt; color: green; border-radius: 5px; border-style: solid; border-width: 1px;}");
+		lbTemp->setText(QString("<font style='font-size:20pt;'>Actual</font><br><font style='font-size:48pt; color:black'>%1</font> <font style='font-size:20pt'>%2F</font>").arg((double)75.1).arg(QChar(0xB0)));
 	 }
 }
 

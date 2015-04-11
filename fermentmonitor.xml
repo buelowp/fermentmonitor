@@ -10,5 +10,5 @@
  <thermometer name="external" path="/sys/" />
  <counter name="leftconical" path="/sys/" />
  <counter name="rightconical" path="/sys/" />
- <holdtemp name="conical" temp="68.0" />
+ <holdtemp name="conical" temp="66.0" />
 </fermenter> 

@@ -35,7 +35,8 @@ public:
 	ConicalDisplay(QWidget *parent = 0, Qt::WindowFlags f = 0);
 	ConicalDisplay(QString, QWidget *parent = 0, Qt::WindowFlags f = 0);
 	virtual ~ConicalDisplay();
-	void setName(QString n) { name = n; }
+	void setName(QString n);
+	void setHoldTemp(double);
 
 public slots:
 	void updateBPM(int);

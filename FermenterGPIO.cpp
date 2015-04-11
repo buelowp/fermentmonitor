@@ -17,6 +17,7 @@ FermenterGPIO::~FermenterGPIO() {
 
 bool FermenterGPIO::setGPIO(QString gpio)
 {
+	/*
 	QDir dir(gpio);
 	QStringList entries;
 
@@ -41,7 +42,7 @@ bool FermenterGPIO::setGPIO(QString gpio)
 	qfswGPIO = new QFileSystemWatcher();
 	qfswGPIO->addPath(qfValue->fileName());
 	connect(qfswGPIO, SIGNAL(fileChanged(QString)), this, SLOT(changed(QString)));
-
+*/
 	return true;
 }
 
