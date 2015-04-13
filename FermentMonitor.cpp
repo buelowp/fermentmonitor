@@ -160,9 +160,9 @@ bool FermentMonitor::init()
 			}
 			if (tag == "holdtemp") {
 				QXmlStreamAttributes attributes = xml.attributes();
-				thermostat->currBoxTemp(attributes.value("temp").toDouble());
-				rightConical->setHoldTemp(attributes.value("temp").toDouble());
-				leftConical->setHoldTemp(attributes.value("temp").toDouble());
+				thermostat->currBoxTemp(attributes.value("temp").toString().toDouble());
+				rightConical->setHoldTemp(attributes.value("temp").toString().toDouble());
+				leftConical->setHoldTemp(attributes.value("temp").toString().toDouble());
 			}
 			if (tag == "counter") {
 				QXmlStreamAttributes attributes = xml.attributes();

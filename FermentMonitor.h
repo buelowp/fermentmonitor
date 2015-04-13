@@ -24,7 +24,7 @@
 #define FERMENTMONITOR_H_
 
 #include <QtCore>
-#include <QtWidgets>
+#include <QtGui>
 #include <QDebug>
 
 #include "RestServer.h"
