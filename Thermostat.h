@@ -52,8 +52,8 @@ public slots:
 	void currBoxTemp(double);
 	void currFermOneTemp(double);
 	void currFermTwoTemp(double);
-	void coolerValueChange(QByteArray);
-	void heaterValueChange(QByteArray);
+	void coolerValueChanged(QByteArray);
+	void heaterValueChanged(QByteArray);
 	void coolerSafeToShutdown();
 
 private:

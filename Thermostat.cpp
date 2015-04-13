@@ -78,7 +78,7 @@ bool Thermostat::addCoolerGPIO(QString gpio)
 	return false;
 }
 
-void Thermostat::heaterValueChange(QByteArray ba)
+void Thermostat::heaterValueChanged(QByteArray ba)
 {
 	if (bCoolerIsRunning) {
 		shutdown();
@@ -96,7 +96,7 @@ void Thermostat::heaterValueChange(QByteArray ba)
 	}
 }
 
-void Thermostat::coolerValueChange(QByteArray ba)
+void Thermostat::coolerValueChanged(QByteArray ba)
 {
 	if (bHeaterIsRunning) {
 		shutdown();
