@@ -37,10 +37,12 @@ public:
 	time_t elapsedSeconds();
 	QString toString();
 	bool isRunning() { return bIsRunning; }
+	void setName(QString n) { name = n; }
 
 private:
 	bool bIsRunning;
 	time_t mStartTime;
+	QString name;
 };
 
 #endif /* STOPWATCH_H_ */

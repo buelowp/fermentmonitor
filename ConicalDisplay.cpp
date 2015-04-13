@@ -75,6 +75,7 @@ ConicalDisplay::~ConicalDisplay() {
 void ConicalDisplay::setName(QString n)
 {
 	lbName->setText(QString("<b>%1</b>").arg(n));
+	sw->setName(n);
 }
 
 void ConicalDisplay::setHoldTemp(double t)

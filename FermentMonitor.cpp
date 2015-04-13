@@ -44,11 +44,11 @@ FermentMonitor::FermentMonitor(QWidget *parent, Qt::WindowFlags f) : QFrame(pare
 	lbExternalTemp->setGeometry(205, 360, 195, 115);
 	lbLeftTime = new QLabel(this);
 	lbLeftTime->setAlignment(Qt::AlignCenter);
-	lbLeftTime->setStyleSheet(".QLabel{font: 36pt; color: black; border-radius: 5px; border-style: solid; border-width: 1px; background-color: #ededed;}");
+	lbLeftTime->setStyleSheet(".QLabel{color: black; border-radius: 5px; border-style: solid; border-width: 1px; background-color: #ededed;}");
 	lbLeftTime->setGeometry(405, 360, 195, 115);
 	lbRightTime = new QLabel(this);
 	lbRightTime->setAlignment(Qt::AlignCenter);
-	lbRightTime->setStyleSheet(".QLabel{font: 36pt; color: black; border-radius: 5px; border-style: solid; border-width: 1px; background-color: #ededed;}");
+	lbRightTime->setStyleSheet(".QLabel{color: black; border-radius: 5px; border-style: solid; border-width: 1px; background-color: #ededed;}");
 	lbRightTime->setGeometry(605, 360, 190, 115);
 
 	QPalette pal(palette());
