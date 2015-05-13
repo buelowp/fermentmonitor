@@ -26,6 +26,7 @@ TempMonitor::TempMonitor() {
 	// TODO Auto-generated constructor stub
 	devicePath = "/sys/bus/w1/devices";
 	bEnabled = true;
+	bMetric = false;
 }
 
 TempMonitor::~TempMonitor() {
@@ -47,8 +48,14 @@ void TempMonitor::run()
 			QByteArray ba = f.readAll();
 			if ((pos = ba.indexOf("t=")) != -1) {
 				pos += 2;	// skip t=
-				QString temp = ba.mid(pos, (ba.size() - pos));
-				emit probeUpdate(s, temp.toDouble());
+				QString temp = ba.mid(pos, 5);
+				double dtemp = temp.toDouble();
+				dtemp = dtemp / 1000;
+				if (!bMetric) {
+					dtemp = ((dtemp * 1.8) + 32);
+				}
+				qDebug() << "Updating " << s << " with temp " << dtemp;
+				emit probeUpdate(s, dtemp);
 			}
 		}
 		sleep(1);

@@ -65,6 +65,7 @@ FermentMonitor::FermentMonitor(QWidget *parent, Qt::WindowFlags f) : QFrame(pare
 	connect(this, SIGNAL(rightConicalError()), rightConical, SLOT(error()));
 	connect(leftConical, SIGNAL(updateRuntime(QString)), lbLeftTime, SLOT(setText(QString)));
 	connect(rightConical, SIGNAL(updateRuntime(QString)), lbRightTime, SLOT(setText(QString)));
+	connect(temps, SIGNAL(probeUpdate(QString, double)), this, SLOT(tempChange(QString, double)));
 }
 
 FermentMonitor::~FermentMonitor()
@@ -160,9 +161,9 @@ bool FermentMonitor::init()
 			}
 			if (tag == "holdtemp") {
 				QXmlStreamAttributes attributes = xml.attributes();
-				thermostat->currBoxTemp(attributes.value("temp").toString().toDouble());
-				rightConical->setHoldTemp(attributes.value("temp").toString().toDouble());
-				leftConical->setHoldTemp(attributes.value("temp").toString().toDouble());
+				thermostat->currBoxTemp(attributes.value("temp").toDouble());
+				rightConical->setHoldTemp(attributes.value("temp").toDouble());
+				leftConical->setHoldTemp(attributes.value("temp").toDouble());
 			}
 			if (tag == "counter") {
 				QXmlStreamAttributes attributes = xml.attributes();
@@ -184,5 +185,7 @@ bool FermentMonitor::init()
 			}
 		}
 	}
+
+	temps->start();
 	return true;
 }

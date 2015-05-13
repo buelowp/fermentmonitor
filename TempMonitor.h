@@ -35,6 +35,7 @@ public:
 	int populateDeviceTree();
 	void run();
 	void setDevicePath(QString s) { devicePath = s; }
+	void setMetric(bool m) { bMetric = m; }
 
 signals:
 	void probeUpdate(QString, double);
@@ -44,6 +45,7 @@ private:
 	QHash<QString, QString> probes;
 	QString devicePath;
 	bool bEnabled;
+	bool bMetric;
 };
 
 #endif /* TEMPMONITOR_H_ */
