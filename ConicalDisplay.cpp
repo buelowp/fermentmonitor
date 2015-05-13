@@ -148,14 +148,18 @@ void ConicalDisplay::setBackground(int state)
 
 void ConicalDisplay::updateTemp(double t)
 {
+	QString s;
+
+	s = QString().setNum(t, 'f', 1);
+
 	 if (t < 50) {
-		lbTemp->setText(QString("<font style='font-size:20pt;'>Actual</font><br><font style='font-size:48pt; color:blue'>%1</font> <font style='font-size:20pt'>%2F</font>").arg((double)75.1).arg(QChar(0xB0)));
+		lbTemp->setText(QString("<font style='font-size:20pt;'>Actual</font><br><font style='font-size:48pt; color:blue'>%1</font> <font style='font-size:20pt'>%2F</font>").arg(s).arg(QChar(0xB0)));
 	 }
 	 else if (t > 80) {
-		lbTemp->setText(QString("<font style='font-size:20pt;'>Actual</font><br><font style='font-size:48pt; color:red'>%1</font> <font style='font-size:20pt'>%2F</font>").arg((double)75.1).arg(QChar(0xB0)));
+		lbTemp->setText(QString("<font style='font-size:20pt;'>Actual</font><br><font style='font-size:48pt; color:red'>%1</font> <font style='font-size:20pt'>%2F</font>").arg(s).arg(QChar(0xB0)));
 	 }
 	 else {
-		lbTemp->setText(QString("<font style='font-size:20pt;'>Actual</font><br><font style='font-size:48pt; color:black'>%1</font> <font style='font-size:20pt'>%2F</font>").arg((double)75.1).arg(QChar(0xB0)));
+		lbTemp->setText(QString("<font style='font-size:20pt;'>Actual</font><br><font style='font-size:48pt; color:black'>%1</font> <font style='font-size:20pt'>%2F</font>").arg(s).arg(QChar(0xB0)));
 	 }
 }
 
