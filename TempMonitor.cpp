@@ -35,7 +35,7 @@ TempMonitor::~TempMonitor() {
 
 void TempMonitor::run()
 {
-	QHashIterator<QString, QString> i(probes);
+	QHashIterator<QString,QString> i(probes);
 	QString s;
 	int pos;
 
@@ -43,6 +43,7 @@ void TempMonitor::run()
 		while (i.hasNext()) {
 			i.next();
 			QFile f(i.value());
+			f.open(QIODevice::ReadOnly);
 			s = i.key();
 
 			QByteArray ba = f.readAll();
@@ -54,10 +55,10 @@ void TempMonitor::run()
 				if (!bMetric) {
 					dtemp = ((dtemp * 1.8) + 32);
 				}
-				qDebug() << "Updating " << s << " with temp " << dtemp;
 				emit probeUpdate(s, dtemp);
 			}
 		}
+		i.toFront();
 		sleep(1);
 	}
 }
