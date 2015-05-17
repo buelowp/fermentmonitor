@@ -83,11 +83,9 @@ void FermentMonitor::getDHTValues()
 	QString s2;
 	if (dhtMon.isValid()) {
 		s1 = QString().setNum(dhtMon.getTemperature(), 'f', 1);
-		lbBoxTemp->setText(s1);
-		lbBoxTemp->setStyleSheet(".QLabel{font: 36pt; color: green; border-radius: 5px; border-style: solid; border-width: 1px;}");
+		lbBoxTemp->setText("<font style='font-size:20pt;'>Humidity</font><br><font style='font-size:48pt; color:black'>%1</font> <font style='font-size:20pt'>%2F</font>").arg(s1);
 		s2 = QString().setNum(dhtMon.getHumidity(), 'f', 1);
-		lbExternalTemp->setText(s2);
-		lbExternalTemp->setStyleSheet(".QLabel{font: 36pt; color: green; border-radius: 5px; border-style: solid; border-width: 1px;}");
+		lbExternalTemp->setText("<font style='font-size:20pt;'>Humidity</font><br><font style='font-size:48pt; color:black'>%1</font> <font style='font-size:20pt'>%2F</font>").arg(s2);
 	}
 	else {
 		qDebug() << "dhtMon is reporting invalid";
