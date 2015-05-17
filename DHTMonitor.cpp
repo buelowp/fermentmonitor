@@ -29,7 +29,7 @@ bool DHTMonitor::init()
 	}
 	ftruncate(shm_fd, sizeof(dht22));
 
-	if ((values = (dht22*)mmap (0, sizeof(dht22), PROT_WRITE, MAP_SHARED, shm_fd, 0)) == MAP_FAILED) {
+	if ((values = (dht22*)mmap (0, sizeof(dht22), PROT_READ, MAP_SHARED, shm_fd, 0)) == MAP_FAILED) {
 		qDebug() << "Unable to mmap shared memory";
 		return false;
 	}

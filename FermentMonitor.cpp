@@ -69,6 +69,8 @@ FermentMonitor::FermentMonitor(QWidget *parent, Qt::WindowFlags f) : QFrame(pare
 	connect(rightConical, SIGNAL(updateRuntime(QString)), lbRightTime, SLOT(setText(QString)));
 	connect(temps, SIGNAL(probeUpdate(QString, double)), this, SLOT(tempChange(QString, double)));
 	connect(tDHTTimer, SIGNAL(timeout()), this, SLOT(getDHTValues()));
+
+	tDHTTimer->start(1000);
 }
 
 FermentMonitor::~FermentMonitor()
@@ -86,6 +88,9 @@ void FermentMonitor::getDHTValues()
 		s2 = QString().setNum(dhtMon.getHumidity(), 'f', 1);
 		lbExternalTemp->setText(s2);
 		lbExternalTemp->setStyleSheet(".QLabel{font: 36pt; color: green; border-radius: 5px; border-style: solid; border-width: 1px;}");
+	}
+	else {
+		qDebug() << "dhtMon is reporting invalid";
 	}
 }
 
