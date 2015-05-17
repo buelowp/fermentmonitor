@@ -10,6 +10,8 @@
 DHTMonitor::DHTMonitor()
 {
 	values = NULL;
+	metric = false;
+	shm_fd = 0;
 }
 
 DHTMonitor::~DHTMonitor()
@@ -33,4 +35,13 @@ bool DHTMonitor::init()
 	}
 
 	return true;
+}
+
+float getTemperature()
+{
+	if (!metric) {
+		float t = values->temperature * 1.8 + 32;
+		return t;
+	}
+	return values->temperature;
 }

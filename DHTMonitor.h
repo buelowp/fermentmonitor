@@ -21,12 +21,15 @@ public:
 	DHTMonitor();
 	virtual ~DHTMonitor();
 	bool init();
-	float getTemperature() { return values->temperature; }
+	float getTemperature();
 	float getHumidity() { return values->humidity; }
+	bool isValid() { return (values->mutex == MUTEX_VALID); }
+	void setMetric(bool m) { metric = m; }
 
 private:
 	dht22 *values;
 	int shm_fd;
+	bool metric;
 };
 
 #endif /* DHTMONITOR_H_ */

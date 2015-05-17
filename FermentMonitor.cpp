@@ -32,6 +32,8 @@ FermentMonitor::FermentMonitor(QWidget *parent, Qt::WindowFlags f) : QFrame(pare
 	leftConical->setGeometry(5, 5, 790, 170);
 	rightConical->setGeometry(5, 180, 790, 170);
 
+	tDHTTimer = new QTimer();
+
 	lbBoxTemp = new QLabel(this);
 	lbBoxTemp->setAlignment(Qt::AlignCenter);
 	lbBoxTemp->setText(QString("<font style='font-size:20pt;'>Internal</font><br><font style='font-size:52pt;color:green;'>%1</font> <font style='font-size:20pt'>%2F</font>").arg((double)75.1).arg(QChar(0xB0)));
@@ -66,10 +68,25 @@ FermentMonitor::FermentMonitor(QWidget *parent, Qt::WindowFlags f) : QFrame(pare
 	connect(leftConical, SIGNAL(updateRuntime(QString)), lbLeftTime, SLOT(setText(QString)));
 	connect(rightConical, SIGNAL(updateRuntime(QString)), lbRightTime, SLOT(setText(QString)));
 	connect(temps, SIGNAL(probeUpdate(QString, double)), this, SLOT(tempChange(QString, double)));
+	connect(tDHTTimer, SIGNAL(timeout()), this, SLOT(getDHTValues()));
 }
 
 FermentMonitor::~FermentMonitor()
 {
+}
+
+void FermentMonitor::getDHTValues()
+{
+	QString s1;
+	QString s2;
+	if (dhtMon.isValid()) {
+		s1 = QString().setNum(dhtMon.getTemperature(), 'f', 1);
+		lbBoxTemp->setText(s1);
+		lbBoxTemp->setStyleSheet(".QLabel{font: 36pt; color: green; border-radius: 5px; border-style: solid; border-width: 1px;}");
+		s2 = QString().setNum(dhtMon.getHumidity(), 'f', 1);
+		lbExternalTemp->setText(s2);
+		lbExternalTemp->setStyleSheet(".QLabel{font: 36pt; color: green; border-radius: 5px; border-style: solid; border-width: 1px;}");
+	}
 }
 
 void FermentMonitor::thermostatAlarm(enum ThermAlarms)
@@ -191,5 +208,6 @@ bool FermentMonitor::init()
 	}
 
 	temps->start();
+	dhtMon.init();
 	return true;
 }
