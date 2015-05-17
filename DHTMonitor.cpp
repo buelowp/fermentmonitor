@@ -9,14 +9,14 @@
 
 DHTMonitor::DHTMonitor()
 {
-	values = NULL;
-	metric = false;
+	pValues = NULL;
+	bMetric = false;
 	shm_fd = 0;
 }
 
 DHTMonitor::~DHTMonitor()
 {
-	munmap(values, sizeof(dht22));
+	munmap(pValues, sizeof(dht22));
 	close(shm_fd);
 	shm_unlink(DHT_MEM_SEGMENT);
 }
@@ -29,7 +29,7 @@ bool DHTMonitor::init()
 	}
 	ftruncate(shm_fd, sizeof(dht22));
 
-	if ((values = (dht22*)mmap (0, sizeof(dht22), PROT_READ, MAP_SHARED, shm_fd, 0)) == MAP_FAILED) {
+	if ((pValues = (dht22*)mmap (0, sizeof(dht22), PROT_READ, MAP_SHARED, shm_fd, 0)) == MAP_FAILED) {
 		qDebug() << "Unable to mmap shared memory";
 		return false;
 	}
@@ -39,9 +39,13 @@ bool DHTMonitor::init()
 
 float DHTMonitor::getTemperature()
 {
-	if (!metric) {
-		float t = values->temperature * 1.8 + 32;
+	float temp = pValues->temperature;
+
+	temp += fCalibration;
+
+	if (!bMetric) {
+		temp = temp * 1.8 + 32;
 		return t;
 	}
-	return values->temperature;
+	return pValues->temperature;
 }

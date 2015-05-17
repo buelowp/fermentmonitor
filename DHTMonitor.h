@@ -24,12 +24,14 @@ public:
 	float getTemperature();
 	float getHumidity() { return values->humidity; }
 	bool isValid() { return (values->mutex == MUTEX_VALID); }
-	void setMetric(bool m) { metric = m; }
+	void setMetric(bool m) { bMetric = m; }
+	void setCalibration(float c) { fCalibration = c; }
 
 private:
-	dht22 *values;
+	dht22 *pValues;
 	int shm_fd;
-	bool metric;
+	bool bMetric;
+	float fCalibration;
 };
 
 #endif /* DHTMONITOR_H_ */
