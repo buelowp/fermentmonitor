@@ -157,7 +157,11 @@ bool FermentMonitor::init()
 				QXmlStreamAttributes attributes = xml.attributes();
 				QString name = attributes.value("name").toString();
 				QString path = attributes.value("path").toString();
+				QString cal = attributes.value("calibration").toString();
 				temps->addDevice(name, path);
+				if (cal.size()) {
+					temps->setCalibration(cal.toDouble());
+				}
 			}
 			if (tag == "holdtemp") {
 				QXmlStreamAttributes attributes = xml.attributes();

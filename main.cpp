@@ -22,6 +22,7 @@
 
 #include <QtCore>
 #include <QApplication>
+#include "bb_dht_read.h"
 #include "FermentMonitor.h"
 
 /**
@@ -32,6 +33,23 @@ int main(int argc, char **argv)
     QApplication app(argc, argv);
     QStringList argList = QApplication::arguments();
     FermentMonitor monitor;
+    float humidity;
+    float temperature;
+    int count;
+    int rval;
+
+    while ((rval = dht_read("P8_13", DHT22, &humidity, &temperature)) != DHT_SUCCESS) {
+    	if (count++ < 20)
+    		continue;
+    	else
+    		break;
+    }
+    if (rval == DHT_SUCCESS) {
+    	qDebug() << "Temp = " << temperature;
+    	qDebug() << "Humidity = " << humidity;
+    }
+    else
+    	qDebug() << "Returned error num " << rval;
 
     if (!monitor.init())
     	return -1;

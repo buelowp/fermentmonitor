@@ -36,6 +36,7 @@ public:
 	void run();
 	void setDevicePath(QString s) { devicePath = s; }
 	void setMetric(bool m) { bMetric = m; }
+	void setCalibration(double);
 
 signals:
 	void probeUpdate(QString, double);
@@ -46,6 +47,7 @@ private:
 	QString devicePath;
 	bool bEnabled;
 	bool bMetric;
+	double calFactor;
 };
 
 #endif /* TEMPMONITOR_H_ */

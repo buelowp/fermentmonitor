@@ -1,0 +1,32 @@
+/*
+ * DHTMonitor.h
+ *
+ *  Created on: May 17, 2015
+ *      Author: pete
+ */
+
+#ifndef DHTMONITOR_H_
+#define DHTMONITOR_H_
+
+#include <QtCore>
+
+#include <sys/mman.h>
+#include <sys/stat.h>        /* For mode constants */
+#include <fcntl.h>           /* For O_* constants */
+
+#include <bbb_dht.h>
+
+class DHTMonitor {
+public:
+	DHTMonitor();
+	virtual ~DHTMonitor();
+	bool init();
+	float getTemperature() { return values->temperature; }
+	float getHumidity() { return values->humidity; }
+
+private:
+	dht22 *values;
+	int shm_fd;
+};
+
+#endif /* DHTMONITOR_H_ */
