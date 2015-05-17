@@ -45,7 +45,7 @@ float DHTMonitor::getTemperature()
 
 	if (!bMetric) {
 		temp = temp * 1.8 + 32;
-		return t;
+		return temp;
 	}
 	return pValues->temperature;
 }
