@@ -22,8 +22,8 @@ public:
 	virtual ~DHTMonitor();
 	bool init();
 	float getTemperature();
-	float getHumidity() { return values->humidity; }
-	bool isValid() { return (values->mutex == MUTEX_VALID); }
+	float getHumidity() { return pValues->humidity; }
+	bool isValid() { return (pValues->mutex == MUTEX_VALID); }
 	void setMetric(bool m) { bMetric = m; }
 	void setCalibration(float c) { fCalibration = c; }
 
