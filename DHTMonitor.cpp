@@ -29,7 +29,7 @@ bool DHTMonitor::init()
 	}
 	ftruncate(shm_fd, sizeof(dht22));
 
-	if ((values = (dht22*)mmap (0, sizeof(dht22), PROT_WRITE, MAP_SHARED, shm_fd, 0)) == MAP_INVALID) {
+	if ((values = (dht22*)mmap (0, sizeof(dht22), PROT_WRITE, MAP_SHARED, shm_fd, 0)) == MAP_FAILED) {
 		qDebug() << "Unable to mmap shared memory";
 		return false;
 	}
@@ -37,7 +37,7 @@ bool DHTMonitor::init()
 	return true;
 }
 
-float getTemperature()
+float DHTMonitor::getTemperature()
 {
 	if (!metric) {
 		float t = values->temperature * 1.8 + 32;
