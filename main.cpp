@@ -33,6 +33,7 @@ int main(int argc, char **argv)
     QStringList argList = QApplication::arguments();
     FermentMonitor monitor;
 
+    app.setOverrideCursor( QCursor( Qt::BlankCursor ) );
     if (!monitor.init())
     	return -1;
 
