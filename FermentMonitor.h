@@ -58,7 +58,7 @@ signals:
 
 private:
 	RestServer *restHandler;
-	DHTMonitor dhtMon;
+	DHTMonitor *dhtMon;
 	QHash<QString, BubbleMonitor*> bubbleCounters;
 	TempMonitor *temps;
 	Thermostat *thermostat;

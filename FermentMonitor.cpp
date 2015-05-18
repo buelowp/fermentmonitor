@@ -36,12 +36,12 @@ FermentMonitor::FermentMonitor(QWidget *parent, Qt::WindowFlags f) : QFrame(pare
 
 	lbBoxTemp = new QLabel(this);
 	lbBoxTemp->setAlignment(Qt::AlignCenter);
-	lbBoxTemp->setText(QString("<font style='font-size:20pt;'>Internal</font><br><font style='font-size:52pt;color:green;'>%1</font> <font style='font-size:20pt'>%2F</font>").arg((double)75.1).arg(QChar(0xB0)));
+	lbBoxTemp->setText(QString("<font style='font-size:20pt;'>Internal</font><br><font style='font-size:52pt;color:green;'></font> <font style='font-size:20pt'>%1F</font>").arg(QChar(0xB0)));
 	lbBoxTemp->setStyleSheet(".QLabel{border-radius: 5px; border-style: solid; border-width: 1px; background-color: #ededed;}");
 	lbBoxTemp->setGeometry(5, 360, 195, 115);
 	lbExternalTemp = new QLabel(this);
 	lbExternalTemp->setAlignment(Qt::AlignCenter);
-	lbExternalTemp->setText(QString("<font style='font-size:20pt;'>External</font><br><font style='font-size:52pt;color:green;'>%1</font> <font style='font-size:20pt'>%2F</font>").arg((double)75.1).arg(QChar(0xB0)));
+	lbExternalTemp->setText(QString("<font style='font-size:20pt;'>External</font><br><font style='font-size:52pt;color:green;'></font> <font style='font-size:20pt'>%1F</font>").arg(QChar(0xB0)));
 	lbExternalTemp->setStyleSheet(".QLabel{border-radius: 5px; border-style: solid; border-width: 1px; background-color: #ededed;}");
 	lbExternalTemp->setGeometry(205, 360, 195, 115);
 	lbLeftTime = new QLabel(this);
@@ -81,10 +81,10 @@ void FermentMonitor::getDHTValues()
 {
 	QString s1;
 	QString s2;
-	if (dhtMon.isValid()) {
-		s1 = QString().setNum(dhtMon.getTemperature(), 'f', 1);
+	if (dhtMon->isValid()) {
+		s1 = QString().setNum(dhtMon->getTemperature(), 'f', 1);
 		lbBoxTemp->setText(QString("<font style='font-size:20pt;'>Temperature</font><br><font style='font-size:48pt; color:black'>%1</font> <font style='font-size:20pt'>F</font>").arg(s1));
-		s2 = QString().setNum(dhtMon.getHumidity(), 'f', 1);
+		s2 = QString().setNum(dhtMon->getHumidity(), 'f', 1);
 		lbExternalTemp->setText(QString("<font style='font-size:20pt;'>Humidity</font><br><font style='font-size:48pt; color:black'>%1</font> <font style='font-size:20pt'>%</font>").arg(s2));
 	}
 	else {
@@ -178,9 +178,17 @@ bool FermentMonitor::init()
 				QString name = attributes.value("name").toString();
 				QString path = attributes.value("path").toString();
 				QString cal = attributes.value("calibration").toString();
-				temps->addDevice(name, path);
-				if (cal.size()) {
-					temps->setCalibration(cal.toDouble());
+				(if name.compare("dh22")) {
+					dhtMon = new DHTMonitor();
+					dhtMon->init();
+					dhtMon->setCalibration(cal.toFloat());
+					temps->start();
+				}
+				else {
+					temps->addDevice(name, path);
+					if (cal.size()) {
+						temps->setCalibration(cal.toDouble());
+					}
 				}
 			}
 			if (tag == "holdtemp") {
@@ -210,8 +218,5 @@ bool FermentMonitor::init()
 		}
 	}
 
-	temps->start();
-	dhtMon.init();
-	dhtMon.setCalibration(3);
 	return true;
 }
