@@ -25,6 +25,7 @@
 FermentMonitor::FermentMonitor(QWidget *parent, Qt::WindowFlags f) : QFrame(parent, f) {
 	temps = new TempMonitor();
 	restHandler = new RestServer(80);
+	backLight = new Backlight();
 	thermostat = new Thermostat();
 	leftConical = new ConicalDisplay(this);
 	rightConical = new ConicalDisplay(this);
@@ -75,6 +76,11 @@ FermentMonitor::FermentMonitor(QWidget *parent, Qt::WindowFlags f) : QFrame(pare
 
 FermentMonitor::~FermentMonitor()
 {
+}
+
+void FermentMonitor::mouseEvent(QMoveEvent*)
+{
+	backLight->touchEvent();
 }
 
 void FermentMonitor::getDHTValues()
@@ -218,5 +224,6 @@ bool FermentMonitor::init()
 		}
 	}
 
+	tBacklight->setInterval(60000);
 	return true;
 }

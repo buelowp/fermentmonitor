@@ -15,7 +15,8 @@ SOURCES = main.cpp \
 	StopWatch.cpp \
 	TempMonitor.cpp \
 	Thermostat.cpp \
-	DHTMonitor.cpp
+	DHTMonitor.cpp \
+	Backlight.cpp
 	
 HEADERS = BubbleMonitor.h \
 	ConicalDisplay.h \
@@ -26,5 +27,5 @@ HEADERS = BubbleMonitor.h \
 	StopWatch.h \
 	TempMonitor.h \
 	Thermostat.h \
-	DHTMonitor.h
-	
+	DHTMonitor.h \
+	Backlight.h
