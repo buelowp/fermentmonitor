@@ -190,6 +190,7 @@ void Thermostat::currBoxTemp(double t)
 
 void Thermostat::runCooler()
 {
+/*
 	QByteArray ba("1");
 
 	if (bCoolerIsRunning)
@@ -205,10 +206,12 @@ void Thermostat::runCooler()
 		bCoolerIsRunning = true;
 
 	QTimer::singleShot(300000, this, SLOT(coolerSafeToShutdown()));
+*/
 }
 
 void Thermostat::runHeater()
 {
+/*
 	if (bHeaterIsRunning)
 		return;
 
@@ -220,10 +223,12 @@ void Thermostat::runHeater()
 	pHeater->setValue(QByteArray("1"));
 	if (pHeater->checkValue("1"))
 		bHeaterIsRunning = true;
+*/
 }
 
 void Thermostat::stopCooler()
 {
+/*
 	if (bCoolerTimeout) {
 		pCooler->setValue(QByteArray("0"));
 		if (pCooler->checkValue("0")) {
@@ -233,14 +238,17 @@ void Thermostat::stopCooler()
 	else {
 		bShutdownOnTimeout = true;
 	}
+*/
 }
 
 void Thermostat::stopHeater()
 {
+/*
 	pHeater->setValue(QByteArray("0"));
 	if (pHeater->checkValue("0")) {
 		bHeaterIsRunning = false;
 	}
+*/
 }
 
 void Thermostat::coolerSafeToShutdown()

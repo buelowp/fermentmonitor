@@ -22,13 +22,14 @@
 
 #include "FermentMonitor.h"
 
-FermentMonitor::FermentMonitor(QWidget *parent, Qt::WindowFlags f) : QFrame(parent, f) {
+FermentMonitor::FermentMonitor(QWidget *p, Qt::WindowFlags f) : QFrame(p, f) {
 	temps = new TempMonitor();
 	restHandler = new RestServer(80);
 	backLight = new Backlight();
 	thermostat = new Thermostat();
 	leftConical = new ConicalDisplay(this);
 	rightConical = new ConicalDisplay(this);
+	parent = p;
 
 	leftConical->setGeometry(5, 5, 790, 170);
 	rightConical->setGeometry(5, 180, 790, 170);
@@ -78,7 +79,7 @@ FermentMonitor::~FermentMonitor()
 {
 }
 
-void FermentMonitor::mouseEvent(QMoveEvent*)
+void FermentMonitor::mousePressEvent(QMouseEvent *event)
 {
 	backLight->touchEvent();
 }
@@ -184,11 +185,10 @@ bool FermentMonitor::init()
 				QString name = attributes.value("name").toString();
 				QString path = attributes.value("path").toString();
 				QString cal = attributes.value("calibration").toString();
-				if (name.compare("dh22")) {
+				if (name.compare("dh22") == 0) {
 					dhtMon = new DHTMonitor();
 					dhtMon->init();
 					dhtMon->setCalibration(cal.toFloat());
-					temps->start();
 				}
 				else {
 					temps->addDevice(name, path);
@@ -223,7 +223,6 @@ bool FermentMonitor::init()
 			}
 		}
 	}
-
-	tBacklight->setInterval(60000);
+	temps->start();
 	return true;
 }

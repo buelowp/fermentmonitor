@@ -15,6 +15,7 @@ Backlight::Backlight(QObject *parent) : QObject(parent)
 	tEventTimeout->setInterval(60000);
 	tEventTimeout->setSingleShot(true);
 
+	connect(tEventTimeout, SIGNAL(timeout()), this, SLOT(timeout()));
 	QDir dir("/sys/class/backlight");
 	QStringList filelist = dir.entryList();
 	for (int i = 0; i < filelist.size(); i++) {
@@ -32,13 +33,17 @@ Backlight::~Backlight()
 
 void Backlight::timeout()
 {
+	qDebug() << "Backlight timeout for " << qfBacklight->fileName();
+	qDebug() << "bDimmed is " << bDimmed;
 	if (!bDimmed) {
+		qDebug() << "Dimming display";
 		qfBacklight->write("50");
 		bDimmed = true;
 		tEventTimeout->setInterval(60000);
 		tEventTimeout->setSingleShot(true);
 	}
 	else {
+		qDebug() << "Turning display off";
 		qfBacklight->write("0");
 	}
 }
@@ -49,4 +54,5 @@ void Backlight::touchEvent()
 	bDimmed = false;
 	tEventTimeout->setInterval(60000);
 	tEventTimeout->setSingleShot(true);
+	qDebug() << "TouchEvent detected";
 }

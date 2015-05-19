@@ -38,12 +38,12 @@
 class FermentMonitor : public QFrame {
 	Q_OBJECT
 public:
-	FermentMonitor(QWidget *parent = 0, Qt::WindowFlags f = 0);
+	FermentMonitor(QWidget *p = 0, Qt::WindowFlags f = 0);
 	virtual ~FermentMonitor();
 	bool init();
 
 protected:
-	void mouseEvent(QMoveEvent*);
+	void mousePressEvent(QMouseEvent*);
 
 public slots:
 	void bubbleCount(QString, int);
@@ -76,6 +76,7 @@ private:
 	QLabel *lbLeftTime;
 	QLabel *lbRightTime;
 	QTimer *tDHTTimer;
+	QWidget *parent;
 };
 
 #endif /* FERMENTMONITOR_H_ */
