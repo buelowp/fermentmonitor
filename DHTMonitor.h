@@ -13,6 +13,7 @@
 #include <sys/mman.h>
 #include <sys/stat.h>        /* For mode constants */
 #include <fcntl.h>           /* For O_* constants */
+#include <errno.h>
 
 #include <bbb_dht.h>
 
@@ -22,8 +23,20 @@ public:
 	virtual ~DHTMonitor();
 	bool init();
 	float getTemperature();
-	float getHumidity() { return pValues->humidity; }
-	bool isValid() { return (pValues->mutex == MUTEX_VALID); }
+	float getHumidity() 
+	{ 
+		if (pValues)
+			return pValues->humidity; 
+		else
+			return 0.0;
+	}
+	bool isValid() 
+	{ 
+		if (pValues) 
+			return (pValues->mutex == MUTEX_VALID); 
+		else
+			return false;
+	}
 	void setMetric(bool m) { bMetric = m; }
 	void setCalibration(float c) { fCalibration = c; }
 

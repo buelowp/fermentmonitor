@@ -185,7 +185,7 @@ bool FermentMonitor::init()
 				QString name = attributes.value("name").toString();
 				QString path = attributes.value("path").toString();
 				QString cal = attributes.value("calibration").toString();
-				if (name.compare("dh22") == 0) {
+				if (name.compare("dht22") == 0) {
 					dhtMon = new DHTMonitor();
 					dhtMon->init();
 					dhtMon->setCalibration(cal.toFloat());
