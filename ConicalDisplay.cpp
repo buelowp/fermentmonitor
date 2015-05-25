@@ -83,10 +83,8 @@ void ConicalDisplay::setHoldTemp(double t)
 	lbHold->setText(QString("<font style='font-size:20pt;'>Target</font><br><font style='font-size:48pt;'>%1</font> <font style='font-size:20pt'>%2F</font>").arg(t).arg(QChar(0xB0)));
 }
 
-void ConicalDisplay::updateHoldTemp(int state)
+void ConicalDisplay::updateHoldTemp(int state, double t)
 {
-	QString t = lbHold->text();
-	qDebug() << t;
 	switch (state) {
 	case WARMING:
 		lbHold->setText(QString("<font style='font-size:20pt;'>Target</font><br><font style='font-size:48pt; color=red;'>%1</font> <font style='font-size:20pt'>%2F</font>").arg(t).arg(QChar(0xB0)));

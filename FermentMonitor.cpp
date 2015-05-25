@@ -84,24 +84,24 @@ FermentMonitor::~FermentMonitor()
 void FermentMonitor::thermostatCoolStateChange(bool state)
 {
 	if (state) {
-		leftConical->updateHoldTemp(COOLING);
-		rightConical->updateHoldTemp(COOLING);
+		leftConical->updateHoldTemp(COOLING, thermostat->getTargetTemp());
+		rightConical->updateHoldTemp(COOLING, thermostat->getTargetTemp());
 	}
 	else {
-		leftConical->updateHoldTemp(IDLE);
-		rightConical->updateHoldTemp(IDLE);
+		leftConical->updateHoldTemp(IDLE, thermostat->getTargetTemp());
+		rightConical->updateHoldTemp(IDLE, thermostat->getTargetTemp());
 	}
 }
 
 void FermentMonitor::thermostatHeatStateChange(bool state)
 {
 	if (state) {
-		leftConical->updateHoldTemp(WARMING);
-		rightConical->updateHoldTemp(WARMING);
+		leftConical->updateHoldTemp(WARMING, thermostat->getTargetTemp());
+		rightConical->updateHoldTemp(WARMING, thermostat->getTargetTemp());
 	}
 	else {
-		leftConical->updateHoldTemp(IDLE);
-		rightConical->updateHoldTemp(IDLE);
+		leftConical->updateHoldTemp(IDLE, thermostat->getTargetTemp());
+		rightConical->updateHoldTemp(IDLE, thermostat->getTargetTemp());
 	}
 }
 

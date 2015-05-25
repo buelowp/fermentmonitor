@@ -42,6 +42,7 @@ public:
 	void shutdown();
 	void addFermenter() { iActiveFermenters++; }
 	void removeFermenter() { iActiveFermenters--; }
+	double getTargetTemp() { return dTargetFermTemp; }
 
 signals:
 	void heatState(bool);

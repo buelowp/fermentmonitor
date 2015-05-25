@@ -37,7 +37,7 @@ public:
 	virtual ~ConicalDisplay();
 	void setName(QString n);
 	void setHoldTemp(double);
-	void updateHoldTemp(int);
+	void updateHoldTemp(int, double);
 
 public slots:
 	void updateBPM(int);
