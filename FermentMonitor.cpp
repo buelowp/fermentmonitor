@@ -83,7 +83,6 @@ FermentMonitor::~FermentMonitor()
 
 void FermentMonitor::thermostatCoolStateChange(bool state)
 {
-	qDebug() << "Cooling is" << state;
 	if (state) {
 		leftConical->updateHoldTemp(COOLING, thermostat->getTargetTemp());
 		rightConical->updateHoldTemp(COOLING, thermostat->getTargetTemp());
@@ -96,7 +95,6 @@ void FermentMonitor::thermostatCoolStateChange(bool state)
 
 void FermentMonitor::thermostatHeatStateChange(bool state)
 {
-	qDebug() << "Heating is" << state;
 	if (state) {
 		leftConical->updateHoldTemp(WARMING, thermostat->getTargetTemp());
 		rightConical->updateHoldTemp(WARMING, thermostat->getTargetTemp());
@@ -228,6 +226,7 @@ bool FermentMonitor::init()
 			if (tag == "holdtemp") {
 				QXmlStreamAttributes attributes = xml.attributes();
 				thermostat->currBoxTemp(attributes.value("temp").toString().toDouble());
+				thermostat->setTargetTemp(attributes.value("temp").toString().toDouble());
 				rightConical->setHoldTemp(attributes.value("temp").toString().toDouble());
 				leftConical->setHoldTemp(attributes.value("temp").toString().toDouble());
 			}

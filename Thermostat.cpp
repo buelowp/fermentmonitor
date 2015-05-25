@@ -45,10 +45,8 @@ Thermostat::~Thermostat() {
 	// TODO Auto-generated destructor stub
 }
 
-enum ThermAlarms Thermostat::setTargetTemp(int t)
+enum ThermAlarms Thermostat::setTargetTemp(double newt)
 {
-	double newt = (double)t;
-
 	if (!validTemp(newt)) {
 		return INVALIDTEMP;
 	}
@@ -124,9 +122,6 @@ bool Thermostat::validTemp(double t)
 
 void Thermostat::currFermOneTemp(double t)
 {
-	if (!validTemp(t))
-		return;
-
 	dFermOneTemp = t;
 
 	if (iActiveFermenters == 2) {
@@ -138,28 +133,21 @@ void Thermostat::currFermOneTemp(double t)
 	}
 
 	if (t < (dTargetFermTemp - 2)) {
-		qDebug() << "running heater";
 		runHeater();
 	}
 	if (t > (dTargetFermTemp + 2)) {
-		qDebug() << "running cooler";
 		runCooler();
 	}
 	if (t < (dTargetFermTemp - 1) && bCoolerIsRunning) {
-		qDebug() << "stopping cooler";
 		stopCooler();
 	}
 	if (t > (dTargetFermTemp + 1) && bHeaterIsRunning) {
-		qDebug() << "stopping heater";
 		stopHeater();
 	}
 }
 
 void Thermostat::currFermTwoTemp(double t)
 {
-	if (!validTemp(t))
-		return;
-
 	dFermTwoTemp = t;
 
 	if (iActiveFermenters == 2) {
