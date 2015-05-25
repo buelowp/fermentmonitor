@@ -106,11 +106,11 @@ void Thermostat::coolerValueChanged(QByteArray ba)
 
 	if (ba == "0") {
 		bCoolerIsRunning = false;
-		emit heatState(false);
+		emit coolState(false);
 	}
 	if (ba == "1") {
 		bCoolerIsRunning = true;
-		emit heatState(true);
+		emit coolState(true);
 	}
 }
 
@@ -207,6 +207,7 @@ void Thermostat::runCooler()
 
 	QTimer::singleShot(300000, this, SLOT(coolerSafeToShutdown()));
 */
+	emit coolState(true);
 }
 
 void Thermostat::runHeater()
@@ -224,6 +225,7 @@ void Thermostat::runHeater()
 	if (pHeater->checkValue("1"))
 		bHeaterIsRunning = true;
 */
+	emit heatState(true);
 }
 
 void Thermostat::stopCooler()
@@ -239,6 +241,7 @@ void Thermostat::stopCooler()
 		bShutdownOnTimeout = true;
 	}
 */
+	emit coolState(false);
 }
 
 void Thermostat::stopHeater()
@@ -249,6 +252,7 @@ void Thermostat::stopHeater()
 		bHeaterIsRunning = false;
 	}
 */
+	emit heatState(false);
 }
 
 void Thermostat::coolerSafeToShutdown()

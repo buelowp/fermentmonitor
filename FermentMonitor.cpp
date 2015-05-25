@@ -71,12 +71,38 @@ FermentMonitor::FermentMonitor(QWidget *p, Qt::WindowFlags f) : QFrame(p, f) {
 	connect(rightConical, SIGNAL(updateRuntime(QString)), lbRightTime, SLOT(setText(QString)));
 	connect(temps, SIGNAL(probeUpdate(QString, double)), this, SLOT(tempChange(QString, double)));
 	connect(tDHTTimer, SIGNAL(timeout()), this, SLOT(getDHTValues()));
+	connect(thermostat, SIGNAL(coolState(bool)), this, SLOT(thermostatCoolStateChange(bool)));
+	connect(thermostat, SIGNAL(heatState(bool)), this, SLOT(thermostatHeatStateChange(bool)));
 
 	tDHTTimer->start(1000);
 }
 
 FermentMonitor::~FermentMonitor()
 {
+}
+
+void FermentMonitor::thermostatCoolStateChange(bool state)
+{
+	if (state) {
+		leftConical->updateHoldTemp(COOLING);
+		rightConical->updateHoldTemp(COOLING);
+	}
+	else {
+		leftConical->updateHoldTemp(IDLE);
+		rightConical->updateHoldTemp(IDLE);
+	}
+}
+
+void FermentMonitor::thermostatHeatStateChange(bool state)
+{
+	if (state) {
+		leftConical->updateHoldTemp(WARMING);
+		rightConical->updateHoldTemp(WARMING);
+	}
+	else {
+		leftConical->updateHoldTemp(IDLE);
+		rightConical->updateHoldTemp(IDLE);
+	}
 }
 
 void FermentMonitor::mousePressEvent(QMouseEvent *event)

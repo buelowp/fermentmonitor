@@ -51,6 +51,8 @@ public slots:
 	void fermentationComplete(QString);
 	void thermostatAlarm(enum ThermAlarms);
 	void getDHTValues();
+	void thermostatCoolStateChange(bool);
+	void thermostatHeatStateChange(bool);
 
 signals:
 	void updateLeftBPM(int);
