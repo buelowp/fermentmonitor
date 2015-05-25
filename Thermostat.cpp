@@ -131,21 +131,26 @@ void Thermostat::currFermOneTemp(double t)
 
 	if (iActiveFermenters == 2) {
 		if (t < (dFermTwoTemp - 2) || t > (dFermTwoTemp + 2)) {
+			qDebug() << "got a fermenter mismatch";
 			emit thermostatAlarm(FERMENTERMISMATCH);
 			return;
 		}
 	}
 
 	if (t < (dTargetFermTemp - 2)) {
+		qDebug() << "running heater";
 		runHeater();
 	}
 	if (t > (dTargetFermTemp + 2)) {
+		qDebug() << "running cooler";
 		runCooler();
 	}
 	if (t < (dTargetFermTemp - 1) && bCoolerIsRunning) {
+		qDebug() << "stopping cooler";
 		stopCooler();
 	}
 	if (t > (dTargetFermTemp + 1) && bHeaterIsRunning) {
+		qDebug() << "stopping heater";
 		stopHeater();
 	}
 }
