@@ -24,6 +24,12 @@
 #define BUBBLEMONITOR_H_
 
 #include <QtCore>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <poll.h>
 
 class BubbleMonitor : public QThread {
 	Q_OBJECT
@@ -31,7 +37,7 @@ public:
 	BubbleMonitor(QString GPIO, QString name);
 	virtual ~BubbleMonitor();
 
-	bool isOpen();
+	bool open();
 	void run();
 	int bubblesPerMinute() { return events.size(); }
 	QString getName() { return name; }
@@ -43,19 +49,21 @@ signals:
 
 public slots:
 	void stop();
-
-protected slots:
-	void fileChanged(QString);
+	void updateBPM();
 
 private:
-	void addEvent();
+	QDateTime addEvent();
+	bool checkTimeout();
 
 	int bubbles;
+	char le;
 	QString name;
 	QFile *gpioFile;
 	QFileSystemWatcher* watcher;
 	QQueue<QDateTime> events;
 	QDateTime lastEvent;
+	QTimer *pTimer;
+	bool bFirstEvent;
 };
 
 #endif /* BUBBLEMONITOR_H_ */

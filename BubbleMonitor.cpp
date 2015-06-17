@@ -27,69 +27,94 @@ BubbleMonitor::BubbleMonitor(QString GPIO, QString Name) {
 	gpioFile = new QFile(GPIO);
 	name = Name;
 	watcher = NULL;
+	le = 'c';
+	pTimer = new QTimer();
+	connect(pTimer, SIGNAL(timeout()), this, SLOT(updateBPM()));
+	pTimer->start(1000);
+	bFirstEvent = false;
 }
 
 BubbleMonitor::~BubbleMonitor() {
 	delete watcher;
 }
 
-bool BubbleMonitor::isOpen()
+bool BubbleMonitor::open()
 {
+	if (gpioFile->isOpen()) {
+		qDebug() << gpioFile->fileName() << "is open";
+		return true;
+	}
+
 	if (!gpioFile->open(QIODevice::ReadOnly|QIODevice::Text)) {
+		qDebug() << "Unable to open file";
 		return false;
 	}
 	return true;
 }
 
-void BubbleMonitor::addEvent()
+QDateTime BubbleMonitor::addEvent()
 {
-	QDateTime first;
-	lastEvent = QDateTime::currentDateTime();
+	events.enqueue(QDateTime::currentDateTime());
 
-	if (events.size() == 0) {
-		events.enqueue(lastEvent);
-		return;
-	}
-
-	first = events.head();
-	if ((lastEvent.toTime_t() - first.toTime_t()) > 60) {
+	while ((events.last().toTime_t() - events.head().toTime_t()) > 60) {
 		events.dequeue();
 	}
-	events.enqueue(lastEvent);
+	return events.last();
 }
 
-void BubbleMonitor::fileChanged(QString)
+bool BubbleMonitor::checkTimeout()
 {
-	QByteArray ba;
-
-	ba = gpioFile->readAll();
-
-	if (ba == "1") {
-		addEvent();
-		emit(bubbleCount(name, ++bubbles));
+	if (events.size() < 2) {
+		return false;
 	}
+
+	int index = events.size();
+	QDateTime one = events.at(index - 2);
+	QDateTime two = events.at(index - 1);
+	if (two.toTime_t() - one.toTime_t() > 43200) {
+		return true;
+	}
+	return false;
+}
+
+void BubbleMonitor::updateBPM()
+{
+	emit bubbleCount(name, events.size());
 }
 
 void BubbleMonitor::run()
 {
-	QFileSystemWatcher *fw = new QFileSystemWatcher(this);
-	fw->addPath(gpioFile->fileName());
-	connect(fw, SIGNAL(fileChanged(QString)), this, SLOT(fileChanged(QString)));
+	struct pollfd fds[1];
+	int rc;
 
-	//* We have to wait until fementation starts before we can do updates or spin in the check loop
-	while (bubbles == 0) {
-		sleep(1);
-	}
+	fds[0].fd = gpioFile->handle();
+	fds[0].events = POLLPRI;
 
 	while (true) {
-		QDateTime now = QDateTime::currentDateTime();
-
-		// If we haven't had a bubble event in 12 hours, we're done
-		if ((lastEvent.toTime_t() - now.toTime_t()) > 43200) {
-			emit fermentationComplete(name);
-			events.clear();
+		if ((rc = poll(fds, 1, 1000)) < 0) {
+			qDebug() << "Error with poll" << rc;
+			continue;
 		}
-		sleep(1);
+		if (rc == 0) {
+			if (checkTimeout()) {
+				qDebug() << "Timeout is true";
+				emit fermentationComplete(name);
+			}
+		}
+		if (rc > 0) {
+			if (bFirstEvent) {
+				bFirstEvent = true;
+				continue;
+			}
+			if (fds[0].revents & POLLPRI) {
+				QByteArray ba = gpioFile->readAll();
+				if (ba[0] != le) {
+					le = ba[0];
+				}
+				QDateTime now = addEvent();
+				bubbles++;
+			}
+		}
 	}
 }
 

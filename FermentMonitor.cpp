@@ -34,12 +34,12 @@ FermentMonitor::FermentMonitor(QWidget *parent, Qt::WindowFlags f) : QFrame(pare
 
 	lbBoxTemp = new QLabel(this);
 	lbBoxTemp->setAlignment(Qt::AlignCenter);
-	lbBoxTemp->setText(QString("<font style='font-size:20pt;'>Internal</font><br><font style='font-size:52pt;color:green;'>%1</font> <font style='font-size:20pt'>%2F</font>").arg((double)75.1).arg(QChar(0xB0)));
+	lbBoxTemp->setText(QString("<font style='font-size:20pt;'>Internal</font><br><font style='font-size:52pt;color:green;'>%1</font> <font style='font-size:20pt'>%2F</font>").arg((double)0.0).arg(QChar(0xB0)));
 	lbBoxTemp->setStyleSheet(".QLabel{border-radius: 5px; border-style: solid; border-width: 1px; background-color: #ededed;}");
 	lbBoxTemp->setGeometry(5, 360, 195, 115);
 	lbExternalTemp = new QLabel(this);
 	lbExternalTemp->setAlignment(Qt::AlignCenter);
-	lbExternalTemp->setText(QString("<font style='font-size:20pt;'>External</font><br><font style='font-size:52pt;color:green;'>%1</font> <font style='font-size:20pt'>%2F</font>").arg((double)75.1).arg(QChar(0xB0)));
+	lbExternalTemp->setText(QString("<font style='font-size:20pt;'>External</font><br><font style='font-size:52pt;color:green;'>%1</font> <font style='font-size:20pt'>%2F</font>").arg((double)0.0).arg(QChar(0xB0)));
 	lbExternalTemp->setStyleSheet(".QLabel{border-radius: 5px; border-style: solid; border-width: 1px; background-color: #ededed;}");
 	lbExternalTemp->setGeometry(205, 360, 195, 115);
 	lbLeftTime = new QLabel(this);
@@ -152,6 +152,15 @@ bool FermentMonitor::init()
 				if (attribute == "cooler") {
 					thermostat->addCoolerGPIO(attributes.value("path").toString());
 				}
+				if (attribute.contains("leftconical")) {
+					BubbleMonitor *bm = new BubbleMonitor(attributes.value("path").toString(), attributes.value("name").toString());
+					if (bm->open()) {
+						bubbleCounters.insert(attributes.value("name").toString(), bm);
+						connect(bm, SIGNAL(bubbleCount(QString, int)), this, SLOT(bubbleCount(QString, int)));
+						connect(bm, SIGNAL(fermentationComplete(QString)), this, SLOT(fermentationComplete(QString)));
+						bm->start();
+					}
+				}
 			}
 			if (tag == "thermometer") {
 				QXmlStreamAttributes attributes = xml.attributes();
@@ -161,17 +170,20 @@ bool FermentMonitor::init()
 			}
 			if (tag == "holdtemp") {
 				QXmlStreamAttributes attributes = xml.attributes();
-				thermostat->currBoxTemp(attributes.value("temp").toDouble());
-				rightConical->setHoldTemp(attributes.value("temp").toDouble());
-				leftConical->setHoldTemp(attributes.value("temp").toDouble());
+				thermostat->currBoxTemp(attributes.value("temp").toString().toDouble());
+				rightConical->setHoldTemp(attributes.value("temp").toString().toDouble());
+				leftConical->setHoldTemp(attributes.value("temp").toString().toDouble());
 			}
 			if (tag == "counter") {
 				QXmlStreamAttributes attributes = xml.attributes();
 				BubbleMonitor *bm = new BubbleMonitor(attributes.value("path").toString(), attributes.value("name").toString());
-				if (bm->isOpen()) {
+				if (bm->open()) {
+					qDebug() << "file is open";
 					bubbleCounters.insert(attributes.value("name").toString(), bm);
 					connect(bm, SIGNAL(bubbleCount(QString, int)), this, SLOT(bubbleCount(QString, int)));
-					connect(bm, SIGNAL(fermentationComplete(QString)), this, SLOT(fementationComplete(QString)));
+					connect(bm, SIGNAL(fermentationComplete(QString)), this, SLOT(fermentationComplete(QString)));
+					qDebug() << "About to start the monitor";
+					bm->start();
 				}
 			}
 			if (tag == "conical") {

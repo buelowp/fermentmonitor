@@ -28,7 +28,7 @@ ConicalDisplay::ConicalDisplay(QWidget *parent, Qt::WindowFlags f) : QFrame(pare
 	lbName->setText("<b>A fermenting beer</b>");
 	lbName->setStyleSheet(".QLabel{font: 32pt; color: black;}");
 	lbTemp = new QLabel(this);
-	lbTemp->setText(QString("<font style='font-size:20pt;'>Actual</font><br><font style='font-size:48pt; color:green'>%1</font> <font style='font-size:20pt'>%2F</font>").arg((double)75.1).arg(QChar(0xB0)));
+	lbTemp->setText(QString("<font style='font-size:20pt;'>Actual</font><br><font style='font-size:48pt; color:green'>%1</font> <font style='font-size:20pt'>%2F</font>").arg((double)0.0).arg(QChar(0xB0)));
 	lbTemp->setStyleSheet(".QLabel{border-style: solid; border-radius: 5px; border-width: 1px;}");
 	lbTemp->setAlignment(Qt::AlignCenter);
 	lbHold = new QLabel(this);
@@ -36,7 +36,6 @@ ConicalDisplay::ConicalDisplay(QWidget *parent, Qt::WindowFlags f) : QFrame(pare
 	lbHold->setStyleSheet(".QLabel{color: black; border-style: solid; border-radius: 5px; border-width: 1px;}");
 	lbHold->setAlignment(Qt::AlignCenter);
 	lbBPM = new QLabel(this);
-	lbBPM->setText(QString("<font style='font-size:16pt;'>Bubbles Per Minute</font><br><font style='font-size: 48pt;'>%1").arg(454));
 	lbBPM->setStyleSheet(".QLabel{border-style: solid; border-radius: 5px; border-width: 1px;}");
 	lbBPM->setAlignment(Qt::AlignCenter);
 	btnEnable = new QPushButton("Start", this);
@@ -165,5 +164,5 @@ void ConicalDisplay::updateTemp(double t)
 
 void ConicalDisplay::updateBPM(int b)
 {
-	lbBPM->setNum(b);
+	lbBPM->setText(QString("<font style='font-size:20pt;'>BPM</font><br><font style='font-size:48pt;'>%1</font>").arg(b));
 }

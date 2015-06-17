@@ -24,7 +24,7 @@
 #define CONICALDISPLAY_H_
 
 #include <QtCore>
-#include <QtWidgets>
+#include <QtGui>
 
 #include "StopWatch.h"
 #include "Fermenter.h"

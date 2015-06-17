@@ -2,13 +2,17 @@
 <fermenter>
  <conical name="49 porter" type="porter" which="leftconical" />
  <conical name="Belmont Ave Amber" type="ale" which="rightconical" />
- <gpio name="heater" path="/sys/" />
- <gpio name="cooler" path="/sys/" />
- <thermometer name="chamber" path="/sys/" />
- <thermometer name="leftconical" path="/sys/" />
- <thermometer name="rightconical" path="/sys/" />
- <thermometer name="external" path="/sys/" />
- <counter name="leftconical" path="/sys/" />
- <counter name="rightconical" path="/sys/" />
+ <gpio name="heater" path="/xxx/" />
+ <gpio name="cooler" path="/xxx/" />
+ <gpio name="leftconical" path="/sys/class/gpio/gpio44/value" />
+<!--
+ <thermometer name="chamber" path="/xxx/" />
+-->
+ <thermometer name="leftconical" path="/sys/devices/w1_bus_master1/28-0000062580af/w1_slave" calibration="-1.5" />
+ <thermometer name="rightconical" path="/sys/devices/w1_bus_master1/28-00000624ed7c/w1_slave" calibratio="-1.4" />
+<!--
+ <thermometer name="external" path="/xxx/" />
+-->
+ <thermometer name="dht22" path="shm" calibration="-.7" />
  <holdtemp name="conical" temp="66.0" />
 </fermenter> 

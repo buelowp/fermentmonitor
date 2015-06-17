@@ -1,7 +1,7 @@
 TEMPLATE = app
 CONFIG += thread gui
 TARGET = fermentmonitor
-QT += network widgets
+QT += network gui
 
 MOC_DIR = .moc
 OBJECTS_DIR = .obj
