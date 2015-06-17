@@ -32,19 +32,27 @@
 #include "TempMonitor.h"
 #include "Thermostat.h"
 #include "ConicalDisplay.h"
+#include "DHTMonitor.h"
+#include "Backlight.h"
 
 class FermentMonitor : public QFrame {
 	Q_OBJECT
 public:
-	FermentMonitor(QWidget *parent = 0, Qt::WindowFlags f = 0);
+	FermentMonitor(QWidget *p = 0, Qt::WindowFlags f = 0);
 	virtual ~FermentMonitor();
 	bool init();
+
+protected:
+	void mousePressEvent(QMouseEvent*);
 
 public slots:
 	void bubbleCount(QString, int);
 	void tempChange(QString, double);
 	void fermentationComplete(QString);
 	void thermostatAlarm(enum ThermAlarms);
+	void getDHTValues();
+	void thermostatCoolStateChange(bool);
+	void thermostatHeatStateChange(bool);
 
 signals:
 	void updateLeftBPM(int);
@@ -56,6 +64,8 @@ signals:
 
 private:
 	RestServer *restHandler;
+	DHTMonitor *dhtMon;
+	Backlight *backLight;
 	QHash<QString, BubbleMonitor*> bubbleCounters;
 	TempMonitor *temps;
 	Thermostat *thermostat;
@@ -67,8 +77,8 @@ private:
 	QLabel *lbExternalTemp;
 	QLabel *lbLeftTime;
 	QLabel *lbRightTime;
-	QTimer *tLeftTimer;
-	QTimer *tRightTimer;
+	QTimer *tDHTTimer;
+	QWidget *parent;
 };
 
 #endif /* FERMENTMONITOR_H_ */

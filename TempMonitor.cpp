@@ -27,10 +27,16 @@ TempMonitor::TempMonitor() {
 	devicePath = "/sys/bus/w1/devices";
 	bEnabled = true;
 	bMetric = false;
+	calFactor = 0;
 }
 
 TempMonitor::~TempMonitor() {
 	// TODO Auto-generated destructor stub
+}
+
+void TempMonitor::setCalibration(double c)
+{
+	calFactor = c;
 }
 
 void TempMonitor::run()
@@ -51,6 +57,7 @@ void TempMonitor::run()
 				pos += 2;	// skip t=
 				QString temp = ba.mid(pos, 5);
 				double dtemp = temp.toDouble();
+				dtemp += calFactor;
 				dtemp = dtemp / 1000;
 				if (!bMetric) {
 					dtemp = ((dtemp * 1.8) + 32);

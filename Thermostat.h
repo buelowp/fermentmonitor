@@ -38,10 +38,10 @@ public:
 	bool addCoolerGPIO(QString);
 	bool addHeaterGPIO(QString);
 	ThermAlarms setTargetTemp(double);
-	ThermAlarms setTargetTemp(int);
 	void shutdown();
 	void addFermenter() { iActiveFermenters++; }
 	void removeFermenter() { iActiveFermenters--; }
+	double getTargetTemp() { return dTargetFermTemp; }
 
 signals:
 	void heatState(bool);

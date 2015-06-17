@@ -45,10 +45,8 @@ Thermostat::~Thermostat() {
 	// TODO Auto-generated destructor stub
 }
 
-enum ThermAlarms Thermostat::setTargetTemp(int t)
+enum ThermAlarms Thermostat::setTargetTemp(double newt)
 {
-	double newt = (double)t;
-
 	if (!validTemp(newt)) {
 		return INVALIDTEMP;
 	}
@@ -106,11 +104,11 @@ void Thermostat::coolerValueChanged(QByteArray ba)
 
 	if (ba == "0") {
 		bCoolerIsRunning = false;
-		emit heatState(false);
+		emit coolState(false);
 	}
 	if (ba == "1") {
 		bCoolerIsRunning = true;
-		emit heatState(true);
+		emit coolState(true);
 	}
 }
 
@@ -124,13 +122,11 @@ bool Thermostat::validTemp(double t)
 
 void Thermostat::currFermOneTemp(double t)
 {
-	if (!validTemp(t))
-		return;
-
 	dFermOneTemp = t;
 
 	if (iActiveFermenters == 2) {
 		if (t < (dFermTwoTemp - 2) || t > (dFermTwoTemp + 2)) {
+			qDebug() << "got a fermenter mismatch";
 			emit thermostatAlarm(FERMENTERMISMATCH);
 			return;
 		}
@@ -152,9 +148,6 @@ void Thermostat::currFermOneTemp(double t)
 
 void Thermostat::currFermTwoTemp(double t)
 {
-	if (!validTemp(t))
-		return;
-
 	dFermTwoTemp = t;
 
 	if (iActiveFermenters == 2) {
@@ -190,7 +183,7 @@ void Thermostat::currBoxTemp(double t)
 
 void Thermostat::runCooler()
 {
-	/*
+/*
 	QByteArray ba("1");
 
 	if (bCoolerIsRunning)
@@ -206,12 +199,13 @@ void Thermostat::runCooler()
 		bCoolerIsRunning = true;
 
 	QTimer::singleShot(300000, this, SLOT(coolerSafeToShutdown()));
-	*/
+*/
+	emit coolState(true);
 }
 
 void Thermostat::runHeater()
 {
-	/*
+/*
 	if (bHeaterIsRunning)
 		return;
 
@@ -223,12 +217,13 @@ void Thermostat::runHeater()
 	pHeater->setValue(QByteArray("1"));
 	if (pHeater->checkValue("1"))
 		bHeaterIsRunning = true;
-		*/
+*/
+	emit heatState(true);
 }
 
 void Thermostat::stopCooler()
 {
-	/*
+/*
 	if (bCoolerTimeout) {
 		pCooler->setValue(QByteArray("0"));
 		if (pCooler->checkValue("0")) {
@@ -238,17 +233,19 @@ void Thermostat::stopCooler()
 	else {
 		bShutdownOnTimeout = true;
 	}
-	*/
+*/
+	emit coolState(false);
 }
 
 void Thermostat::stopHeater()
 {
-	/*
+/*
 	pHeater->setValue(QByteArray("0"));
 	if (pHeater->checkValue("0")) {
 		bHeaterIsRunning = false;
 	}
-	*/
+*/
+	emit heatState(false);
 }
 
 void Thermostat::coolerSafeToShutdown()

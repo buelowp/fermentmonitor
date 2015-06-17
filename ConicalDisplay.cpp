@@ -28,7 +28,7 @@ ConicalDisplay::ConicalDisplay(QWidget *parent, Qt::WindowFlags f) : QFrame(pare
 	lbName->setText("<b>A fermenting beer</b>");
 	lbName->setStyleSheet(".QLabel{font: 32pt; color: black;}");
 	lbTemp = new QLabel(this);
-	lbTemp->setText(QString("<font style='font-size:20pt;'>Actual</font><br><font style='font-size:48pt; color:green'>%1</font> <font style='font-size:20pt'>%2F</font>").arg((double)0.0).arg(QChar(0xB0)));
+	lbTemp->setText(QString("<font style='font-size:20pt;'>Actual</font><br><font style='font-size:48pt; color:green'></font> <font style='font-size:20pt'>%1F</font>").arg(QChar(0xB0)));
 	lbTemp->setStyleSheet(".QLabel{border-style: solid; border-radius: 5px; border-width: 1px;}");
 	lbTemp->setAlignment(Qt::AlignCenter);
 	lbHold = new QLabel(this);
@@ -82,6 +82,22 @@ void ConicalDisplay::setHoldTemp(double t)
 	lbHold->setText(QString("<font style='font-size:20pt;'>Target</font><br><font style='font-size:48pt;'>%1</font> <font style='font-size:20pt'>%2F</font>").arg(t).arg(QChar(0xB0)));
 }
 
+void ConicalDisplay::updateHoldTemp(int state, double t)
+{
+	switch (state) {
+	case WARMING:
+		lbHold->setText(QString("<font style='font-size:20pt;'>Target</font><br><font style='font-size:48pt; color:red;'>%1</font> <font style='font-size:20pt'>%2F</font>").arg(t).arg(QChar(0xB0)));
+		break;
+	case COOLING:
+		lbHold->setText(QString("<font style='font-size:20pt;'>Target</font><br><font style='font-size:48pt; color:blue;'>%1</font> <font style='font-size:20pt'>%2F</font>").arg(t).arg(QChar(0xB0)));
+		break;
+	case IDLE:
+	default:
+		lbHold->setText(QString("<font style='font-size:20pt;'>Target</font><br><font style='font-size:48pt; color:black'>%1</font> <font style='font-size:20pt'>%2F</font>").arg(t).arg(QChar(0xB0)));
+		break;
+	}
+
+}
 void ConicalDisplay::showEvent(QShowEvent* e)
 {
 	if (e->type() == QEvent::Show) {

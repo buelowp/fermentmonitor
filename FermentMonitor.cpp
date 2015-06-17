@@ -22,24 +22,28 @@
 
 #include "FermentMonitor.h"
 
-FermentMonitor::FermentMonitor(QWidget *parent, Qt::WindowFlags f) : QFrame(parent, f) {
+FermentMonitor::FermentMonitor(QWidget *p, Qt::WindowFlags f) : QFrame(p, f) {
 	temps = new TempMonitor();
 	restHandler = new RestServer(80);
+	backLight = new Backlight();
 	thermostat = new Thermostat();
 	leftConical = new ConicalDisplay(this);
 	rightConical = new ConicalDisplay(this);
+	parent = p;
 
 	leftConical->setGeometry(5, 5, 790, 170);
 	rightConical->setGeometry(5, 180, 790, 170);
 
+	tDHTTimer = new QTimer();
+
 	lbBoxTemp = new QLabel(this);
 	lbBoxTemp->setAlignment(Qt::AlignCenter);
-	lbBoxTemp->setText(QString("<font style='font-size:20pt;'>Internal</font><br><font style='font-size:52pt;color:green;'>%1</font> <font style='font-size:20pt'>%2F</font>").arg((double)0.0).arg(QChar(0xB0)));
+	lbBoxTemp->setText(QString("<font style='font-size:20pt;'>Internal</font><br><font style='font-size:52pt;color:green;'></font> <font style='font-size:20pt'>%1F</font>").arg(QChar(0xB0)));
 	lbBoxTemp->setStyleSheet(".QLabel{border-radius: 5px; border-style: solid; border-width: 1px; background-color: #ededed;}");
 	lbBoxTemp->setGeometry(5, 360, 195, 115);
 	lbExternalTemp = new QLabel(this);
 	lbExternalTemp->setAlignment(Qt::AlignCenter);
-	lbExternalTemp->setText(QString("<font style='font-size:20pt;'>External</font><br><font style='font-size:52pt;color:green;'>%1</font> <font style='font-size:20pt'>%2F</font>").arg((double)0.0).arg(QChar(0xB0)));
+	lbExternalTemp->setText(QString("<font style='font-size:20pt;'>External</font><br><font style='font-size:52pt;color:green;'></font> <font style='font-size:20pt'>%1F</font>").arg(QChar(0xB0)));
 	lbExternalTemp->setStyleSheet(".QLabel{border-radius: 5px; border-style: solid; border-width: 1px; background-color: #ededed;}");
 	lbExternalTemp->setGeometry(205, 360, 195, 115);
 	lbLeftTime = new QLabel(this);
@@ -66,10 +70,59 @@ FermentMonitor::FermentMonitor(QWidget *parent, Qt::WindowFlags f) : QFrame(pare
 	connect(leftConical, SIGNAL(updateRuntime(QString)), lbLeftTime, SLOT(setText(QString)));
 	connect(rightConical, SIGNAL(updateRuntime(QString)), lbRightTime, SLOT(setText(QString)));
 	connect(temps, SIGNAL(probeUpdate(QString, double)), this, SLOT(tempChange(QString, double)));
+	connect(tDHTTimer, SIGNAL(timeout()), this, SLOT(getDHTValues()));
+	connect(thermostat, SIGNAL(coolState(bool)), this, SLOT(thermostatCoolStateChange(bool)));
+	connect(thermostat, SIGNAL(heatState(bool)), this, SLOT(thermostatHeatStateChange(bool)));
+
+	tDHTTimer->start(1000);
 }
 
 FermentMonitor::~FermentMonitor()
 {
+}
+
+void FermentMonitor::thermostatCoolStateChange(bool state)
+{
+	if (state) {
+		leftConical->updateHoldTemp(COOLING, thermostat->getTargetTemp());
+		rightConical->updateHoldTemp(COOLING, thermostat->getTargetTemp());
+	}
+	else {
+		leftConical->updateHoldTemp(IDLE, thermostat->getTargetTemp());
+		rightConical->updateHoldTemp(IDLE, thermostat->getTargetTemp());
+	}
+}
+
+void FermentMonitor::thermostatHeatStateChange(bool state)
+{
+	if (state) {
+		leftConical->updateHoldTemp(WARMING, thermostat->getTargetTemp());
+		rightConical->updateHoldTemp(WARMING, thermostat->getTargetTemp());
+	}
+	else {
+		leftConical->updateHoldTemp(IDLE, thermostat->getTargetTemp());
+		rightConical->updateHoldTemp(IDLE, thermostat->getTargetTemp());
+	}
+}
+
+void FermentMonitor::mousePressEvent(QMouseEvent *event)
+{
+	backLight->touchEvent();
+}
+
+void FermentMonitor::getDHTValues()
+{
+	QString s1;
+	QString s2;
+	if (dhtMon->isValid()) {
+		s1 = QString().setNum(dhtMon->getTemperature(), 'f', 1);
+		lbBoxTemp->setText(QString("<font style='font-size:20pt;'>Temperature</font><br><font style='font-size:48pt; color:black'>%1</font> <font style='font-size:20pt'>F</font>").arg(s1));
+		s2 = QString().setNum(dhtMon->getHumidity(), 'f', 1);
+		lbExternalTemp->setText(QString("<font style='font-size:20pt;'>Humidity</font><br><font style='font-size:48pt; color:black'>%1</font> <font style='font-size:20pt'>%</font>").arg(s2));
+	}
+	else {
+		qDebug() << "dhtMon is reporting invalid";
+	}
 }
 
 void FermentMonitor::thermostatAlarm(enum ThermAlarms)
@@ -166,11 +219,23 @@ bool FermentMonitor::init()
 				QXmlStreamAttributes attributes = xml.attributes();
 				QString name = attributes.value("name").toString();
 				QString path = attributes.value("path").toString();
-				temps->addDevice(name, path);
+				QString cal = attributes.value("calibration").toString();
+				if (name.compare("dht22") == 0) {
+					dhtMon = new DHTMonitor();
+					dhtMon->init();
+					dhtMon->setCalibration(cal.toFloat());
+				}
+				else {
+					temps->addDevice(name, path);
+					if (cal.size()) {
+						temps->setCalibration(cal.toDouble());
+					}
+				}
 			}
 			if (tag == "holdtemp") {
 				QXmlStreamAttributes attributes = xml.attributes();
 				thermostat->currBoxTemp(attributes.value("temp").toString().toDouble());
+				thermostat->setTargetTemp(attributes.value("temp").toString().toDouble());
 				rightConical->setHoldTemp(attributes.value("temp").toString().toDouble());
 				leftConical->setHoldTemp(attributes.value("temp").toString().toDouble());
 			}
@@ -197,7 +262,6 @@ bool FermentMonitor::init()
 			}
 		}
 	}
-
 	temps->start();
 	return true;
 }

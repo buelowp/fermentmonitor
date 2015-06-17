@@ -54,6 +54,11 @@ bool BubbleMonitor::open()
 
 QDateTime BubbleMonitor::addEvent()
 {
+	if (!bFirstEvent) {
+		bFirstEvent = true;
+		return QDateTime::currentDateTime();
+	}
+
 	events.enqueue(QDateTime::currentDateTime());
 
 	while ((events.last().toTime_t() - events.head().toTime_t()) > 60) {
@@ -102,10 +107,6 @@ void BubbleMonitor::run()
 			}
 		}
 		if (rc > 0) {
-			if (bFirstEvent) {
-				bFirstEvent = true;
-				continue;
-			}
 			if (fds[0].revents & POLLPRI) {
 				QByteArray ba = gpioFile->readAll();
 				if (ba[0] != le) {
