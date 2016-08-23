@@ -23,7 +23,7 @@
 #ifndef BUBBLEMONITOR_H_
 #define BUBBLEMONITOR_H_
 
-#include <QtCore>
+#include <QtCore/QtCore>
 
 class BubbleMonitor : public QThread {
 	Q_OBJECT

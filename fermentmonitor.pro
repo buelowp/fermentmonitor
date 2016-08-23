@@ -1,28 +1,25 @@
 TEMPLATE = app
-CONFIG += thread gui
+CONFIG += thread gui debug
 TARGET = fermentmonitor
-QT += network widgets
+QT += gui network widgets
 
-MOC_DIR = .moc
-OBJECTS_DIR = .obj
+LIBS = -lvl6180_pi
 
 SOURCES = main.cpp \
 	BubbleMonitor.cpp \
 	ConicalDisplay.cpp \
-	FermenterGPIO.cpp \
 	FermentMonitor.cpp \
 	RestServer.cpp \
 	StopWatch.cpp \
 	TempMonitor.cpp \
-	Thermostat.cpp
+	Gravity.cpp
 	
 HEADERS = BubbleMonitor.h \
 	ConicalDisplay.h \
 	Fermenter.h \
-	FermenterGPIO.h \
 	FermentMonitor.h \
 	RestServer.h \
 	StopWatch.h \
 	TempMonitor.h \
-	Thermostat.h
+	Gravity.h
 	

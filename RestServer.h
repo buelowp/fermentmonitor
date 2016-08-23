@@ -23,9 +23,9 @@
 #ifndef RESTSERVER_H_
 #define RESTSERVER_H_
 
-#include <QtCore>
-#include <QObject>
-#include <QtNetwork>
+#include <QtCore/QtCore>
+#include <QtCore/QObject>
+#include <QtNetwork/QtNetwork>
 
 #define RS_HTTP_GET		1
 #define RS_HTTP_POST	2

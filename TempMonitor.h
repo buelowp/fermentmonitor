@@ -23,7 +23,7 @@
 #ifndef TEMPMONITOR_H_
 #define TEMPMONITOR_H_
 
-#include <QtCore>
+#include <QtCore/QtCore>
 
 class TempMonitor : public QThread {
 	Q_OBJECT
