@@ -23,8 +23,8 @@
 #ifndef CONICALDISPLAY_H_
 #define CONICALDISPLAY_H_
 
-#include <QtCore>
-#include <QtWidgets>
+#include <QtCore/QtCore>
+#include <QtWidgets/QtWidgets>
 
 #include "StopWatch.h"
 #include "Fermenter.h"
@@ -36,11 +36,11 @@ public:
 	ConicalDisplay(QString, QWidget *parent = 0, Qt::WindowFlags f = 0);
 	virtual ~ConicalDisplay();
 	void setName(QString n);
-	void setHoldTemp(double);
 
 public slots:
 	void updateBPM(int);
 	void updateTemp(double);
+	void updateGravity(double);
 	void error();
 	void enable();
 	void update();
@@ -56,8 +56,8 @@ private:
 	void setBackground(int);
 
 	QLabel *lbTemp;
-	QLabel *lbHold;
 	QLabel *lbBPM;
+	QLabel *m_gravity;
 	QLabel *lbName;
 	QPushButton *btnEnable;
 	QTimer *tUpdate;

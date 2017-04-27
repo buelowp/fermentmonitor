@@ -25,21 +25,18 @@
 FermentMonitor::FermentMonitor(QWidget *parent, Qt::WindowFlags f) : QFrame(parent, f) {
 	temps = new TempMonitor();
 	restHandler = new RestServer(80);
-	thermostat = new Thermostat();
 	leftConical = new ConicalDisplay(this);
 	rightConical = new ConicalDisplay(this);
 
 	leftConical->setGeometry(5, 5, 790, 170);
 	rightConical->setGeometry(5, 180, 790, 170);
 
-	lbBoxTemp = new QLabel(this);
-	lbBoxTemp->setAlignment(Qt::AlignCenter);
-	lbBoxTemp->setText(QString("<font style='font-size:20pt;'>Internal</font><br><font style='font-size:52pt;color:green;'>%1</font> <font style='font-size:20pt'>%2F</font>").arg((double)75.1).arg(QChar(0xB0)));
-	lbBoxTemp->setStyleSheet(".QLabel{border-radius: 5px; border-style: solid; border-width: 1px; background-color: #ededed;}");
-	lbBoxTemp->setGeometry(5, 360, 195, 115);
+	m_leftGravity = new Gravity(this);
+	m_rightGravity = new Gravity(this);
+
 	lbExternalTemp = new QLabel(this);
 	lbExternalTemp->setAlignment(Qt::AlignCenter);
-	lbExternalTemp->setText(QString("<font style='font-size:20pt;'>External</font><br><font style='font-size:52pt;color:green;'>%1</font> <font style='font-size:20pt'>%2F</font>").arg((double)75.1).arg(QChar(0xB0)));
+	lbExternalTemp->setText(QString("<font style='font-size:20pt;'>Air Temp</font><br><font style='font-size:52pt;color:green;'>%1</font> <font style='font-size:20pt'>%2F</font>").arg((double)75.1).arg(QChar(0xB0)));
 	lbExternalTemp->setStyleSheet(".QLabel{border-radius: 5px; border-style: solid; border-width: 1px; background-color: #ededed;}");
 	lbExternalTemp->setGeometry(205, 360, 195, 115);
 	lbLeftTime = new QLabel(this);
@@ -50,31 +47,42 @@ FermentMonitor::FermentMonitor(QWidget *parent, Qt::WindowFlags f) : QFrame(pare
 	lbRightTime->setAlignment(Qt::AlignCenter);
 	lbRightTime->setStyleSheet(".QLabel{color: black; border-radius: 5px; border-style: solid; border-width: 1px; background-color: #ededed;}");
 	lbRightTime->setGeometry(605, 360, 190, 115);
+	m_envHumidity = new QLabel(this);
+	m_envHumidity->setAlignment(Qt::AlignCenter);
+	m_envHumidity->setText(QString("<font style='font-size:20pt;'>Humidity</font><br><font style='font-size:52pt;color:green;'>%1</font> <font style='font-size:20pt'>%2F</font>").arg((double)75.1).arg(QChar(0xB0)));
+	m_envHumidity->setStyleSheet(".QLabel{border-radius: 5px; border-style: solid; border-width: 1px; background-color: #ededed;}");
+	m_envHumidity->setGeometry(5, 360, 195, 115);
 
 	QPalette pal(palette());
 	pal.setColor(QPalette::Background, Qt::white);
 	setAutoFillBackground(true);
 	setPalette(pal);
 
-	connect(thermostat, SIGNAL(thermostatAlarm(enum ThermAlarms)), this, SLOT(thermostatAlarm(enum ThermAlarms)));
 	connect(this, SIGNAL(updateLeftBPM(int)), leftConical, SLOT(updateBPM(int)));
-	connect(this, SIGNAL(updateLeftTemp(double)), leftConical, SLOT(updateTemp(double)));
 	connect(this, SIGNAL(leftConicalError()), leftConical, SLOT(error()));
 	connect(this, SIGNAL(updateRightBPM(int)), rightConical, SLOT(updateBPM(int)));
-	connect(this, SIGNAL(updateRightTemp(double)), rightConical, SLOT(updateTemp(double)));
 	connect(this, SIGNAL(rightConicalError()), rightConical, SLOT(error()));
+	connect(m_leftGravity, SIGNAL(updateGravity(double)), leftConical, SLOT(updateGravity(double)));
+	connect(m_rightGravity, SIGNAL(updateGravity(double)), rightConical, SLOT(updateGravity(double)));
+	connect(temps, SIGNAL(probeUpdate(QString, double)), this, SLOT(updateTemps(QString, double)));
 	connect(leftConical, SIGNAL(updateRuntime(QString)), lbLeftTime, SLOT(setText(QString)));
 	connect(rightConical, SIGNAL(updateRuntime(QString)), lbRightTime, SLOT(setText(QString)));
-	connect(temps, SIGNAL(probeUpdate(QString, double)), this, SLOT(tempChange(QString, double)));
 }
 
 FermentMonitor::~FermentMonitor()
 {
 }
 
-void FermentMonitor::thermostatAlarm(enum ThermAlarms)
+void FermentMonitor::updateTemps(QString n, double t)
 {
-
+	if (n == "left") {
+		m_leftGravity->setTemperature(t);
+		leftConical->updateTemp(t);
+	}
+	if (n == "right") {
+		m_rightGravity->setTemperature(t);
+		rightConical->updateTemp(t);
+	}
 }
 
 void FermentMonitor::bubbleCount(QString name, int count)
@@ -82,48 +90,17 @@ void FermentMonitor::bubbleCount(QString name, int count)
 	BubbleMonitor *bm = bubbleCounters.value(name);
 	restHandler->setBubbleCount(name, count);
 	restHandler->setBubblesPerMin(name, bm->bubblesPerMinute());
-	if (name == "leftconical") {
+	if (name == "left") {
 		emit updateLeftBPM(bm->bubblesPerMinute());
 	}
-	if (name == "rightconical") {
+	if (name == "right") {
 		emit updateRightBPM(bm->bubblesPerMinute());
 	}
-}
-
-void FermentMonitor::tempChange(QString name, double temp)
-{
-	 restHandler->setTemp(name, temp);
-	 if (name == "chamber") {
-		 thermostat->currBoxTemp(temp);
-		 if (temp < 50) {
-			 lbBoxTemp->setText(QString("%1 %2F").arg(temp).arg(QChar(0xB0)));
-			 lbBoxTemp->setStyleSheet(".QLabel{font: 36pt; color: blue; border-radius: 5px; border-style: solid; border-width: 1px;}");
-		 }
-		 else if (temp > 80) {
-			 lbBoxTemp->setText(QString("%1 %2F").arg(temp).arg(QChar(0xB0)));
-			 lbBoxTemp->setStyleSheet(".QLabel{font: 36pt; color: red; border-radius: 5px; border-style: solid; border-width: 1px;}");
-		 }
-		 else {
-			 lbBoxTemp->setText(QString("%1 %2F").arg(temp).arg(QChar(0xB0)));
-			 lbBoxTemp->setStyleSheet(".QLabel{font: 36pt; color: green; border-radius: 5px; border-style: solid; border-width: 1px;}");
-		 }
-	 }
-	 if (name == "leftconical") {
-		 emit updateLeftTemp(temp);
-		 thermostat->currFermOneTemp(temp);
-		 leftConical->updateTemp(temp);
-	 }
-	 if (name == "rightconical") {
-		 emit updateRightTemp(temp);
-		 thermostat->currFermTwoTemp(temp);
-		 rightConical->updateTemp(temp);
-	 }
 }
 
 void FermentMonitor::fermentationComplete(QString name)
 {
 	restHandler->setFermentState(name, true);
-	thermostat->shutdown();
 }
 
 bool FermentMonitor::init()
@@ -146,24 +123,12 @@ bool FermentMonitor::init()
 			if (tag == "gpio") {
 				QXmlStreamAttributes attributes = xml.attributes();
 				QString attribute = attributes.value("name").toString();
-				if (attribute == "heater") {
-					thermostat->addHeaterGPIO(attributes.value("path").toString());
-				}
-				if (attribute == "cooler") {
-					thermostat->addCoolerGPIO(attributes.value("path").toString());
-				}
 			}
 			if (tag == "thermometer") {
 				QXmlStreamAttributes attributes = xml.attributes();
 				QString name = attributes.value("name").toString();
 				QString path = attributes.value("path").toString();
 				temps->addDevice(name, path);
-			}
-			if (tag == "holdtemp") {
-				QXmlStreamAttributes attributes = xml.attributes();
-				thermostat->currBoxTemp(attributes.value("temp").toDouble());
-				rightConical->setHoldTemp(attributes.value("temp").toDouble());
-				leftConical->setHoldTemp(attributes.value("temp").toDouble());
 			}
 			if (tag == "counter") {
 				QXmlStreamAttributes attributes = xml.attributes();
@@ -176,11 +141,22 @@ bool FermentMonitor::init()
 			}
 			if (tag == "conical") {
 				QXmlStreamAttributes attributes = xml.attributes();
-				if (attributes.value("which") == "leftconical") {
+				if (attributes.value("which") == "left") {
 					leftConical->setName(attributes.value("name").toString());
 				}
-				if (attributes.value("which") == "rightconical") {
+				if (attributes.value("which") == "right") {
 					rightConical->setName(attributes.value("name").toString());
+				}
+			}
+			if (tag == "gravity") {
+				QXmlStreamAttributes attributes = xml.attributes();
+				if (attributes.value("name") == "left") {
+					m_leftGravity->setName(attributes.value("name").toString());
+					m_leftGravity->setDevice(attributes.value("device").toInt());
+				}
+				if (attributes.value("name") == "right") {
+					m_rightGravity->setName(attributes.value("name").toString());
+					m_rightGravity->setDevice(attributes.value("device").toInt());
 				}
 			}
 		}

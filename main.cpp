@@ -20,8 +20,8 @@
  *      Author: pete
  */
 
-#include <QtCore>
-#include <QApplication>
+#include <QtCore/QtCore>
+#include <QtWidgets/QApplication>
 #include "FermentMonitor.h"
 
 /**
@@ -33,8 +33,10 @@ int main(int argc, char **argv)
     QStringList argList = QApplication::arguments();
     FermentMonitor monitor;
 
-    if (!monitor.init())
+    if (!monitor.init()) {
+    	qDebug() << "Monitor init failed";
     	return -1;
+    }
 
     monitor.setGeometry(0, 0, 800, 480);
     monitor.show();

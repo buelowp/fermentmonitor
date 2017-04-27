@@ -22,15 +22,16 @@
 
 #include "TempMonitor.h"
 
-TempMonitor::TempMonitor() {
+TempMonitor::TempMonitor()
+{
 	// TODO Auto-generated constructor stub
 	devicePath = "/sys/bus/w1/devices";
 	bEnabled = true;
 	bMetric = false;
 }
 
-TempMonitor::~TempMonitor() {
-	// TODO Auto-generated destructor stub
+TempMonitor::~TempMonitor()
+{
 }
 
 void TempMonitor::run()

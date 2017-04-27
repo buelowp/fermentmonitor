@@ -23,16 +23,18 @@
 #ifndef FERMENTMONITOR_H_
 #define FERMENTMONITOR_H_
 
-#include <QtCore>
-#include <QtWidgets>
-#include <QDebug>
+#include <QtCore/QtCore>
+#include <QtWidgets/QtWidgets>
+#include <QtCore/QDebug>
 
 #include "RestServer.h"
 #include "BubbleMonitor.h"
 #include "TempMonitor.h"
-#include "Thermostat.h"
 #include "ConicalDisplay.h"
+<<<<<<< HEAD
 #include "DisplayPower.h"
+=======
+>>>>>>> ae865034b8245e49193474550ad8742108979367
 #include "Gravity.h"
 
 class FermentMonitor : public QFrame {
@@ -44,9 +46,8 @@ public:
 
 public slots:
 	void bubbleCount(QString, int);
-	void tempChange(QString, double);
 	void fermentationComplete(QString);
-	void thermostatAlarm(enum ThermAlarms);
+	void updateTemps(QString, double);
 
 signals:
 	void updateLeftBPM(int);
@@ -55,25 +56,30 @@ signals:
 	void updateRightBPM(int);
 	void updateRightTemp(double);
 	void rightConicalError();
+	void updateLeftGravity(double);
+	void updateRighGravity(double);
 
 private:
 	RestServer *restHandler;
 	QHash<QString, BubbleMonitor*> bubbleCounters;
 	TempMonitor *temps;
-	Thermostat *thermostat;
 	ConicalDisplay *leftConical;
 	ConicalDisplay *rightConical;
+<<<<<<< HEAD
     DisplayPower *pDisplayPower;
     Gravity *m_leftGravity;
     Gravity *m_rightGravity;
 	QHBoxLayout *layout;
 	QWidget *wBaseBar;
 	QLabel *lbBoxTemp;
+=======
+	Gravity *m_leftGravity;
+	Gravity *m_rightGravity;
+>>>>>>> ae865034b8245e49193474550ad8742108979367
 	QLabel *lbExternalTemp;
+	QLabel *m_envHumidity;
 	QLabel *lbLeftTime;
 	QLabel *lbRightTime;
-	QTimer *tLeftTimer;
-	QTimer *tRightTimer;
 };
 
 #endif /* FERMENTMONITOR_H_ */

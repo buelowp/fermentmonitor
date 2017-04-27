@@ -23,7 +23,7 @@
 #ifndef STOPWATCH_H_
 #define STOPWATCH_H_
 
-#include <QtCore>
+#include <QtCore/QtCore>
 #include <time.h>
 
 class StopWatch {
