@@ -31,10 +31,7 @@
 #include "BubbleMonitor.h"
 #include "TempMonitor.h"
 #include "ConicalDisplay.h"
-<<<<<<< HEAD
 #include "DisplayPower.h"
-=======
->>>>>>> ae865034b8245e49193474550ad8742108979367
 #include "Gravity.h"
 
 class FermentMonitor : public QFrame {
@@ -65,17 +62,14 @@ private:
 	TempMonitor *temps;
 	ConicalDisplay *leftConical;
 	ConicalDisplay *rightConical;
-<<<<<<< HEAD
     DisplayPower *pDisplayPower;
     Gravity *m_leftGravity;
     Gravity *m_rightGravity;
 	QHBoxLayout *layout;
 	QWidget *wBaseBar;
 	QLabel *lbBoxTemp;
-=======
 	Gravity *m_leftGravity;
 	Gravity *m_rightGravity;
->>>>>>> ae865034b8245e49193474550ad8742108979367
 	QLabel *lbExternalTemp;
 	QLabel *m_envHumidity;
 	QLabel *lbLeftTime;
