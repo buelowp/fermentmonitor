@@ -32,6 +32,8 @@
 #include "TempMonitor.h"
 #include "Thermostat.h"
 #include "ConicalDisplay.h"
+#include "DisplayPower.h"
+#include "Gravity.h"
 
 class FermentMonitor : public QFrame {
 	Q_OBJECT
@@ -61,6 +63,9 @@ private:
 	Thermostat *thermostat;
 	ConicalDisplay *leftConical;
 	ConicalDisplay *rightConical;
+    DisplayPower *pDisplayPower;
+    Gravity *m_leftGravity;
+    Gravity *m_rightGravity;
 	QHBoxLayout *layout;
 	QWidget *wBaseBar;
 	QLabel *lbBoxTemp;

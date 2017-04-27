@@ -14,7 +14,9 @@ SOURCES = main.cpp \
 	RestServer.cpp \
 	StopWatch.cpp \
 	TempMonitor.cpp \
-	Thermostat.cpp
+	Thermostat.cpp \
+	DisplayPower.cpp \
+    Gravity.cpp
 	
 HEADERS = BubbleMonitor.h \
 	ConicalDisplay.h \
@@ -24,5 +26,7 @@ HEADERS = BubbleMonitor.h \
 	RestServer.h \
 	StopWatch.h \
 	TempMonitor.h \
-	Thermostat.h
+	Thermostat.h \
+	DisplayPower.h \
+    Gravity.h
 	
