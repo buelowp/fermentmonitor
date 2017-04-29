@@ -39,6 +39,8 @@ public:
     int currentDistance();
     bool openPort(int);
     void setMultiplier(double);
+    void setName(QString);
+    void setDevice(int);
 
 public slots:
     void updateTOF();
@@ -55,6 +57,8 @@ private:
     double m_gravity;
     double m_sg;
     double m_multiplier;
+    QString m_name;
+    QString m_device;
     
     vl6180 m_handle;
     

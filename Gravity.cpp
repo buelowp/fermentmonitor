@@ -44,6 +44,16 @@ Gravity::~Gravity()
     
 }
 
+void Gravity::setName(QString n)
+{
+	m_name = n;
+}
+
+void Gravity::setDevice(int i)
+{
+	m_device = i;
+}
+
 bool Gravity::openPort(int port)
 {
     if ((m_handle = vl6180_initialise(port)) < 0) {
