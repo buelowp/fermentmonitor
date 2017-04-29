@@ -68,8 +68,6 @@ private:
 	QHBoxLayout *layout;
 	QWidget *wBaseBar;
 	QLabel *lbBoxTemp;
-	Gravity *m_leftGravity;
-	Gravity *m_rightGravity;
 	QLabel *lbExternalTemp;
 	QLabel *m_envHumidity;
 	QLabel *lbLeftTime;
