@@ -25,7 +25,7 @@
 #define Gravity_hpp
 
 #include <QtCore>
-#include <vl6180.h>
+#include <vl6180_pi.h>
 
 class Gravity : public QObject {
     Q_OBJECT

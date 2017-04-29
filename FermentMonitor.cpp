@@ -75,14 +75,6 @@ FermentMonitor::~FermentMonitor()
 
 void FermentMonitor::updateTemps(QString n, double t)
 {
-	if (n == "left") {
-		m_leftGravity->setTemperature(t);
-		leftConical->updateTemp(t);
-	}
-	if (n == "right") {
-		m_rightGravity->setTemperature(t);
-		rightConical->updateTemp(t);
-	}
 }
 
 void FermentMonitor::bubbleCount(QString name, int count)
