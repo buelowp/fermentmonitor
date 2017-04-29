@@ -12,7 +12,8 @@ SOURCES = main.cpp \
 	RestServer.cpp \
 	TempMonitor.cpp \
 	DisplayPower.cpp \
-    Gravity.cpp
+    Gravity.cpp \
+	StopWatch.cpp
 
 HEADERS = BubbleMonitor.h \
 	ConicalDisplay.h \
@@ -21,5 +22,6 @@ HEADERS = BubbleMonitor.h \
 	RestServer.h \
 	TempMonitor.h \
 	DisplayPower.h \
-    Gravity.h
+    Gravity.h \
+	StopWatch.h
 
