@@ -56,12 +56,14 @@ void Gravity::setDevice(int i)
 
 void Gravity::startRunning(bool r)
 {
+	/*
     if (r) {
         m_update->start();
     }
     else {
         m_update->stop();
     }
+    */
 }
 
 bool Gravity::openPort(int port)

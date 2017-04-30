@@ -44,6 +44,12 @@ public:
 public slots:
 	void fermentationComplete(QString);
 	void updateTemps(QString, double);
+	void checkRuntime(QString);
+	void leftRunning(bool);
+	void rightRunning(bool);
+
+protected:
+	void showEvent(QShowEvent*);
 
 signals:
 	void updateLeftTemp(double);

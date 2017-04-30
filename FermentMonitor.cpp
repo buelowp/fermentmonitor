@@ -25,15 +25,11 @@
 FermentMonitor::FermentMonitor(QWidget *parent, Qt::WindowFlags f) : QFrame(parent, f) {
 	temps = new TempMonitor();
 	restHandler = new RestServer(80);
-	leftConical = new ConicalDisplay(this);
-	rightConical = new ConicalDisplay(this);
+	leftConical = new ConicalDisplay();
+	rightConical = new ConicalDisplay();
 
 	m_humidity = 0;
 	m_externalTemp = 0;
-
-	qDebug() << __PRETTY_FUNCTION__ << "width=" << width();
-	leftConical->setGeometry(0, 0, width(), 170);
-	rightConical->setGeometry(0, 180, width(), 170);
 
 	m_leftGravity = new Gravity(this);
 	m_rightGravity = new Gravity(this);
@@ -42,20 +38,16 @@ FermentMonitor::FermentMonitor(QWidget *parent, Qt::WindowFlags f) : QFrame(pare
 	lbExternalTemp->setAlignment(Qt::AlignCenter);
 	lbExternalTemp->setText(QString("<font style='font-family: \"Roboto\"; font-size:20pt;'>Air Temp</font><br><font style='font-family: \"Roboto\"; font-size:52pt;'>%1</font> <font style='font-family: \"Roboto\"; font-size:20pt'>%2F</font>").arg(m_externalTemp).arg(QChar(0xB0)));
 	lbExternalTemp->setStyleSheet(".QLabel{border-radius: 5px; border-style: solid; border-width: 1px; background-color: #ededed;}");
-	lbExternalTemp->setGeometry(205, 360, 195, 115);
 	lbLeftTime = new QLabel(this);
 	lbLeftTime->setAlignment(Qt::AlignCenter);
 	lbLeftTime->setStyleSheet(".QLabel{font-family: \"Roboto\"; color: black; border-radius: 5px; border-style: solid; border-width: 1px; background-color: #ededed;}");
-	lbLeftTime->setGeometry(405, 360, 195, 115);
 	lbRightTime = new QLabel(this);
 	lbRightTime->setAlignment(Qt::AlignCenter);
 	lbRightTime->setStyleSheet(".QLabel{font-family: \"Roboto\"; color: black; border-radius: 5px; border-style: solid; border-width: 1px; background-color: #ededed;}");
-	lbRightTime->setGeometry(605, 360, 190, 115);
 	m_envHumidity = new QLabel(this);
 	m_envHumidity->setAlignment(Qt::AlignCenter);
 	m_envHumidity->setText(QString("<font style='font-family: \"Roboto\"; font-size:20pt;'>Humidity</font><br><font style='font-family: \"Roboto\"; font-size:52pt;'>%1</font> <font style='font-family: \"Roboto\"; font-size:20pt'>%</font>").arg(m_humidity));
 	m_envHumidity->setStyleSheet(".QLabel{border-radius: 5px; border-style: solid; border-width: 1px; background-color: #ededed;}");
-	m_envHumidity->setGeometry(5, 360, 195, 115);
 
 	QPalette pal(palette());
 	pal.setColor(QPalette::Background, Qt::white);
@@ -71,10 +63,45 @@ FermentMonitor::FermentMonitor(QWidget *parent, Qt::WindowFlags f) : QFrame(pare
 	connect(rightConical, SIGNAL(updateRuntime(QString)), lbRightTime, SLOT(setText(QString)));
     connect(leftConical, SIGNAL(startRunning(bool)), m_leftGravity, SLOT(startRunning(bool)));
     connect(rightConical, SIGNAL(startRunning(bool)), m_rightGravity, SLOT(startRunning(bool)));
+    connect(leftConical, SIGNAL(startRunning(bool)), this, SLOT(leftRunning(bool)));
+    connect(rightConical, SIGNAL(startRunning(bool)), this, SLOT(rightRunning(bool)));
 }
 
 FermentMonitor::~FermentMonitor()
 {
+}
+
+void FermentMonitor::leftRunning(bool r)
+{
+	if (!r) {
+		lbLeftTime->setText("");
+	}
+}
+
+void FermentMonitor::rightRunning(bool r)
+{
+	if (!r) {
+		lbRightTime->setText("");
+	}
+}
+
+void FermentMonitor::checkRuntime(QString r)
+{
+	qWarning() << __PRETTY_FUNCTION__ << r;
+}
+
+void FermentMonitor::showEvent(QShowEvent* e)
+{
+	leftConical->setGeometry(0, 0, width(), 170);
+	rightConical->setGeometry(0, 180, width(), 170);
+	lbExternalTemp->setGeometry(205, 360, 195, 115);
+	lbLeftTime->setGeometry(405, 360, 195, 115);
+	lbRightTime->setGeometry(605, 360, 190, 115);
+	m_envHumidity->setGeometry(5, 360, 195, 115);
+	leftConical->setParent(this);
+	leftConical->show();
+	rightConical->setParent(this);
+	rightConical->show();
 }
 
 void FermentMonitor::updateTemps(QString n, double t)

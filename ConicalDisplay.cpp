@@ -35,12 +35,13 @@ ConicalDisplay::ConicalDisplay(QWidget *parent, Qt::WindowFlags f) : QFrame(pare
 	lbTemp->setStyleSheet(".QLabel{border-style: solid; border-radius: 5px; border-width: 1px;}");
 	lbTemp->setAlignment(Qt::AlignCenter);
 	m_gravity = new QLabel(this);
-	m_gravity->setText(QString("<font style='font-family: \"Roboto\"; font-size:16pt;'>Est Gravity</font><br><font style='font-family: \"Roboto\"; font-size:36pt;'>%1</font> <font style='font-size:20pt'>gu</font>").arg(m_cg, 0, 'g', 3));
+	m_gravity->setText(QString("<font style='font-family: \"Roboto\"; font-size:16pt;'>Estimated Gravity</font><br><font style='font-family: \"Roboto\"; font-size:36pt;'>%1</font> <font style='font-size:20pt'>gu</font>").arg(m_cg, 0, 'g', 3));
 	m_gravity->setStyleSheet(".QLabel{color: black; border-style: solid; border-radius: 5px; border-width: 1px;}");
 	m_gravity->setAlignment(Qt::AlignCenter);
 	btnEnable = new QPushButton("Start", this);
 	btnEnable->setStyleSheet(".QPushButton{font-family: \"Roboto\"; font-size: 36pt; color: black; border-radius: 5px; border-style: solid; border-width: 1px;}");
 	tUpdate = new QTimer(this);
+	tUpdate->setInterval(500);
 	sw = new StopWatch();
 
 	setFrameShape(QFrame::Box);
@@ -59,6 +60,7 @@ ConicalDisplay::ConicalDisplay(QString n, QWidget *parent, Qt::WindowFlags f) : 
 	lbTemp->setNum(0.0);
 	btnEnable = new QPushButton("Enable", this);
 	tUpdate = new QTimer(this);
+	tUpdate->setInterval(500);
 	sw = new StopWatch();
 
 	connect(tUpdate, SIGNAL(timeout()), this, SLOT(update()));
@@ -78,9 +80,6 @@ void ConicalDisplay::setName(QString n)
 
 void ConicalDisplay::showEvent(QShowEvent* e)
 {
-	qDebug() << __PRETTY_FUNCTION__ << "width=" << width();
-	qDebug() << __PRETTY_FUNCTION__ << "height=" << height();
-
 	int divby5 = (width() / 5);
 	int divby3 = (height() / 3);
 
@@ -103,14 +102,16 @@ void ConicalDisplay::paintEvent(QPaintEvent*)
 void ConicalDisplay::enable()
 {
 	if (sw->isRunning()) {
+		qWarning() << __PRETTY_FUNCTION__ << "Timer is running";
 		sw->stop();
 		tUpdate->stop();
         emit startRunning(false);
         btnEnable->setText("Start");
 	}
 	else {
+		qWarning() << __PRETTY_FUNCTION__ << "Timer is not running";
 		sw->start();
-		tUpdate->start(500);
+		tUpdate->start();
         emit startRunning(true);
         btnEnable->setText("Stop");
 	}

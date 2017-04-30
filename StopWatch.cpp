@@ -70,6 +70,6 @@ QString StopWatch::toString()
 	elapsed = elapsed - (60 * minutes);
 	int seconds = elapsed % 60;
 
-	return QString("<font style='font-size:12pt;'>%1</font><br><font style='font-size:30pt;'>%2 days</font><br><font style='font-size:30pt'>%3:%4</font>")
+	return QString("<font style='font-family: \"Roboto\"; font-size:12pt;'>%1</font><br><font style='font-family: \"Roboto\"; font-size:30pt;'>%2 days</font><br><font style='font-family: \"Roboto\"; font-size:20pt'>%3 h, %4 m</font>")
 			.arg(name).arg(days).arg(hours).arg(minutes, 2, 10, QChar('0'));
 }
