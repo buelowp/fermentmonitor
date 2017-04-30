@@ -42,15 +42,12 @@ public:
 	bool init();
 
 public slots:
-	void bubbleCount(QString, int);
 	void fermentationComplete(QString);
 	void updateTemps(QString, double);
 
 signals:
-	void updateLeftBPM(int);
 	void updateLeftTemp(double);
 	void leftConicalError();
-	void updateRightBPM(int);
 	void updateRightTemp(double);
 	void rightConicalError();
 	void updateLeftGravity(double);
@@ -58,7 +55,6 @@ signals:
 
 private:
 	RestServer *restHandler;
-	QHash<QString, BubbleMonitor*> bubbleCounters;
 	TempMonitor *temps;
 	ConicalDisplay *leftConical;
 	ConicalDisplay *rightConical;

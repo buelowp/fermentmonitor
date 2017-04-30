@@ -78,11 +78,14 @@ void ConicalDisplay::setName(QString n)
 
 void ConicalDisplay::showEvent(QShowEvent* e)
 {
+	int divby5 = (width() / 5);
+	int divby3 = (height() / 3);
+
 	if (e->type() == QEvent::Show) {
 		lbName->setGeometry(0, 0, width(), height() / 3);
-		m_gravity->setGeometry(5, height() / 3, (width() / 5) * 2, (((height() / 3) * 2) - 10));
-		lbTemp->setGeometry(205, height() / 3, (width() / 5) * 2, (((height() / 3) * 2) - 10));
-		btnEnable->setGeometry(645, height() / 3, width() / 5, (((height() / 3) * 2) - 10));
+		m_gravity->setGeometry(2, height() / 3, (divby5 * 2) - 4, ((divby3 * 2) - 10));
+		lbTemp->setGeometry((divby5 * 2) + 2, height() / 3, (divby5 * 2) - 4, ((divby3 * 2) - 10));
+		btnEnable->setGeometry((divby5 * 4) + 2, height() / 3, divby5 - 4, ((divby3 * 2) - 10));
 	}
 }
 
