@@ -68,6 +68,8 @@ private:
 	QLabel *m_envHumidity;
 	QLabel *lbLeftTime;
 	QLabel *lbRightTime;
+	int m_humidity;
+	int m_externalTemp;
 };
 
 #endif /* FERMENTMONITOR_H_ */

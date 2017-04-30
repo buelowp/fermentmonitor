@@ -28,6 +28,9 @@ FermentMonitor::FermentMonitor(QWidget *parent, Qt::WindowFlags f) : QFrame(pare
 	leftConical = new ConicalDisplay(this);
 	rightConical = new ConicalDisplay(this);
 
+	m_humidity = 0;
+	m_externalTemp = 0;
+
 	leftConical->setGeometry(5, 5, 790, 170);
 	rightConical->setGeometry(5, 180, 790, 170);
 
@@ -36,20 +39,20 @@ FermentMonitor::FermentMonitor(QWidget *parent, Qt::WindowFlags f) : QFrame(pare
 
 	lbExternalTemp = new QLabel(this);
 	lbExternalTemp->setAlignment(Qt::AlignCenter);
-	lbExternalTemp->setText(QString("<font style='font-size:20pt;'>Air Temp</font><br><font style='font-size:52pt;color:green;'>%1</font> <font style='font-size:20pt'>%2F</font>").arg((double)75.1).arg(QChar(0xB0)));
-	lbExternalTemp->setStyleSheet(".QLabel{border-radius: 5px; border-style: solid; border-width: 1px; background-color: #ededed;}");
+	lbExternalTemp->setText(QString("<font font-family: roboto; style='font-size:20pt;'>Air Temp</font><br><font font-family: roboto; style='font-size:52pt;color:green;'>%1</font> <font style='font-size:20pt'>%2F</font>").arg(m_externalTemp.arg(QChar(0xB0)));
+	lbExternalTemp->setStyleSheet(".QLabel{font-family: roboto; border-radius: 5px; border-style: solid; border-width: 1px; background-color: #ededed;}");
 	lbExternalTemp->setGeometry(205, 360, 195, 115);
 	lbLeftTime = new QLabel(this);
 	lbLeftTime->setAlignment(Qt::AlignCenter);
-	lbLeftTime->setStyleSheet(".QLabel{color: black; border-radius: 5px; border-style: solid; border-width: 1px; background-color: #ededed;}");
+	lbLeftTime->setStyleSheet(".QLabel{font-family: roboto; color: black; border-radius: 5px; border-style: solid; border-width: 1px; background-color: #ededed;}");
 	lbLeftTime->setGeometry(405, 360, 195, 115);
 	lbRightTime = new QLabel(this);
 	lbRightTime->setAlignment(Qt::AlignCenter);
-	lbRightTime->setStyleSheet(".QLabel{color: black; border-radius: 5px; border-style: solid; border-width: 1px; background-color: #ededed;}");
+	lbRightTime->setStyleSheet(".QLabel{font-family: roboto; color: black; border-radius: 5px; border-style: solid; border-width: 1px; background-color: #ededed;}");
 	lbRightTime->setGeometry(605, 360, 190, 115);
 	m_envHumidity = new QLabel(this);
 	m_envHumidity->setAlignment(Qt::AlignCenter);
-	m_envHumidity->setText(QString("<font style='font-size:20pt;'>Humidity</font><br><font style='font-size:52pt;color:green;'>%1</font> <font style='font-size:20pt'>%2F</font>").arg((double)75.1).arg(QChar(0xB0)));
+	m_envHumidity->setText(QString("<font font-family: roboto; style='font-size:20pt;'>Humidity</font><br><font font-family: roboto; style='font-size:52pt;color:green;'>%1</font> <font style='font-size:20pt'>%2F</font>").arg(m_humidity));
 	m_envHumidity->setStyleSheet(".QLabel{border-radius: 5px; border-style: solid; border-width: 1px; background-color: #ededed;}");
 	m_envHumidity->setGeometry(5, 360, 195, 115);
 
