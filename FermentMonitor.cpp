@@ -58,15 +58,15 @@ FermentMonitor::FermentMonitor(QWidget *parent, Qt::WindowFlags f) : QFrame(pare
 	setAutoFillBackground(true);
 	setPalette(pal);
 
-	connect(this, SIGNAL(updateLeftBPM(int)), leftConical, SLOT(updateBPM(int)));
 	connect(this, SIGNAL(leftConicalError()), leftConical, SLOT(error()));
-	connect(this, SIGNAL(updateRightBPM(int)), rightConical, SLOT(updateBPM(int)));
 	connect(this, SIGNAL(rightConicalError()), rightConical, SLOT(error()));
-	connect(m_leftGravity, SIGNAL(updateGravity(double)), leftConical, SLOT(updateGravity(double)));
-	connect(m_rightGravity, SIGNAL(updateGravity(double)), rightConical, SLOT(updateGravity(double)));
+	connect(m_leftGravity, SIGNAL(gravityUpdated(double)), leftConical, SLOT(updateGravity(double)));
+	connect(m_rightGravity, SIGNAL(gravityUpdated(double)), rightConical, SLOT(updateGravity(double)));
 	connect(temps, SIGNAL(probeUpdate(QString, double)), this, SLOT(updateTemps(QString, double)));
 	connect(leftConical, SIGNAL(updateRuntime(QString)), lbLeftTime, SLOT(setText(QString)));
 	connect(rightConical, SIGNAL(updateRuntime(QString)), lbRightTime, SLOT(setText(QString)));
+    connect(leftConical, SIGNAL(startRunning(bool)), m_leftGravity, SLOT(startRunning(bool)));
+    connect(rightConical, SIGNAL(startRunning(bool)), m_rightGravity, SLOT(startRunning(bool)));
 }
 
 FermentMonitor::~FermentMonitor()
@@ -75,19 +75,12 @@ FermentMonitor::~FermentMonitor()
 
 void FermentMonitor::updateTemps(QString n, double t)
 {
-}
-
-void FermentMonitor::bubbleCount(QString name, int count)
-{
-	BubbleMonitor *bm = bubbleCounters.value(name);
-	restHandler->setBubbleCount(name, count);
-	restHandler->setBubblesPerMin(name, bm->bubblesPerMinute());
-	if (name == "left") {
-		emit updateLeftBPM(bm->bubblesPerMinute());
-	}
-	if (name == "right") {
-		emit updateRightBPM(bm->bubblesPerMinute());
-	}
+    if (n == "left") {
+        leftConical->updateTemp(t);
+    }
+    if (n == "right") {
+        rightConical->updateTemp(t);
+    }
 }
 
 void FermentMonitor::fermentationComplete(QString name)
@@ -121,15 +114,6 @@ bool FermentMonitor::init()
 				QString name = attributes.value("name").toString();
 				QString path = attributes.value("path").toString();
 				temps->addDevice(name, path);
-			}
-			if (tag == "counter") {
-				QXmlStreamAttributes attributes = xml.attributes();
-				BubbleMonitor *bm = new BubbleMonitor(attributes.value("path").toString(), attributes.value("name").toString());
-				if (bm->isOpen()) {
-					bubbleCounters.insert(attributes.value("name").toString(), bm);
-					connect(bm, SIGNAL(bubbleCount(QString, int)), this, SLOT(bubbleCount(QString, int)));
-					connect(bm, SIGNAL(fermentationComplete(QString)), this, SLOT(fementationComplete(QString)));
-				}
 			}
 			if (tag == "conical") {
 				QXmlStreamAttributes attributes = xml.attributes();

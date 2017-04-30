@@ -24,21 +24,20 @@
 
 ConicalDisplay::ConicalDisplay(QWidget *parent, Qt::WindowFlags f) : QFrame(parent, f)
 {
+    m_temp = 0.0;
+    m_cg = 0.0;
+    
 	lbName = new QLabel(this);
-	lbName->setText("<b>A fermenting beer</b>");
+	lbName->setText(QString("<b>%1</b>").arg(name));
 	lbName->setStyleSheet(".QLabel{font: 32pt; color: black;}");
 	lbTemp = new QLabel(this);
-	lbTemp->setText(QString("<font style='font-size:16pt;'>Wort Temp</font><br><font style='font-size:48pt; color:green'>%1</font> <font style='font-size:20pt'>%2F</font>").arg((double)75.1).arg(QChar(0xB0)));
+	lbTemp->setText(QString("<font style='font-size:16pt;'>Wort Temp</font><br><font style='font-size:48pt; color:green'>%1</font> <font style='font-size:20pt'>%2F</font>").arg(m_temp).arg(QChar(0xB0)));
 	lbTemp->setStyleSheet(".QLabel{border-style: solid; border-radius: 5px; border-width: 1px;}");
 	lbTemp->setAlignment(Qt::AlignCenter);
 	m_gravity = new QLabel(this);
-	m_gravity->setText(QString("<font style='font-size:16pt;'>Est Gravity</font><br><font style='font-size:36pt;'>%1</font> <font style='font-size:20pt'>gu</font>").arg((double)(1.000), 0, 'g', 3));
+	m_gravity->setText(QString("<font style='font-size:16pt;'>Est Gravity</font><br><font style='font-size:36pt;'>%1</font> <font style='font-size:20pt'>gu</font>").arg(m_cg, 0, 'g', 3));
 	m_gravity->setStyleSheet(".QLabel{color: black; border-style: solid; border-radius: 5px; border-width: 1px;}");
 	m_gravity->setAlignment(Qt::AlignCenter);
-	lbBPM = new QLabel(this);
-	lbBPM->setText(QString("<font style='font-size:16pt;'>Bubbles Per Minute</font><br><font style='font-size: 48pt;'>%1").arg(454));
-	lbBPM->setStyleSheet(".QLabel{border-style: solid; border-radius: 5px; border-width: 1px;}");
-	lbBPM->setAlignment(Qt::AlignCenter);
 	btnEnable = new QPushButton("Start", this);
 	btnEnable->setStyleSheet(".QPushButton{font: 36pt; color: black; border-radius: 5px; border-style: solid; border-width: 1px;}");
 	tUpdate = new QTimer(this);
@@ -58,8 +57,6 @@ ConicalDisplay::ConicalDisplay(QString n, QWidget *parent, Qt::WindowFlags f) : 
 	lbName = new QLabel(name, this);
 	lbTemp = new QLabel(this);
 	lbTemp->setNum(0.0);
-	lbBPM = new QLabel(this);
-	lbBPM->setNum(0);
 	btnEnable = new QPushButton("Enable", this);
 	tUpdate = new QTimer(this);
 	sw = new StopWatch();
@@ -74,6 +71,7 @@ ConicalDisplay::~ConicalDisplay()
 
 void ConicalDisplay::setName(QString n)
 {
+    name = n;
 	lbName->setText(QString("<b>%1</b>").arg(n));
 	sw->setName(n);
 }
@@ -81,11 +79,10 @@ void ConicalDisplay::setName(QString n)
 void ConicalDisplay::showEvent(QShowEvent* e)
 {
 	if (e->type() == QEvent::Show) {
-		lbName->setGeometry(0, 0, 800, height() / 3);
-		m_gravity->setGeometry(5, height() / 3, 195, (((height() / 3) * 2) - 10));
-		lbTemp->setGeometry(205, height() / 3, 195, (((height() / 3) * 2) - 10));
-		lbBPM->setGeometry(405, height() / 3, 235, (((height() / 3) * 2) - 10));
-		btnEnable->setGeometry(645, height() / 3, 140, (((height() / 3) * 2) - 10));
+		lbName->setGeometry(0, 0, width(), height() / 3);
+		m_gravity->setGeometry(5, height() / 3, (width() / 5) * 2, (((height() / 3) * 2) - 10));
+		lbTemp->setGeometry(205, height() / 3, (width() / 5) * 2, (((height() / 3) * 2) - 10));
+		btnEnable->setGeometry(645, height() / 3, width() / 5, (((height() / 3) * 2) - 10));
 	}
 }
 
@@ -102,10 +99,14 @@ void ConicalDisplay::enable()
 	if (sw->isRunning()) {
 		sw->stop();
 		tUpdate->stop();
+        emit startRunning(false);
+        btnEnable->setText("Start");
 	}
 	else {
 		sw->start();
 		tUpdate->start(500);
+        emit startRunning(true);
+        btnEnable->setText("Stop");
 	}
 }
 
@@ -144,6 +145,7 @@ void ConicalDisplay::setBackground(int state)
 void ConicalDisplay::updateTemp(double t)
 {
 	QString s;
+    m_temp = t;
 
 	s = QString().setNum(t, 'f', 1);
 
@@ -158,12 +160,10 @@ void ConicalDisplay::updateTemp(double t)
 	 }
 }
 
-void ConicalDisplay::updateBPM(int b)
-{
-	lbBPM->setNum(b);
-}
-
 void ConicalDisplay::updateGravity(double g)
 {
-	m_gravity->setText(QString("<font style='font-size:20pt;'>Target</font><br><font style='font-size:48pt;'>%1</font> <font style='font-size:20pt'>%2F</font>").arg((double)(g), 0, 'g', 3).arg(QChar(0xB0)));
+    QString s = QString().setNum(g, 'f', 3);
+    m_cg = g;
+    
+	m_gravity->setText(QString("<font style='font-size:20pt;'>Target</font><br><font style='font-size:48pt;'>%1</font> <font style='font-size:20pt'>%2F</font>").arg(s));
 }

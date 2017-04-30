@@ -38,7 +38,6 @@ public:
 	void setName(QString n);
 
 public slots:
-	void updateBPM(int);
 	void updateTemp(double);
 	void updateGravity(double);
 	void error();
@@ -47,6 +46,7 @@ public slots:
 
 signals:
 	void updateRuntime(QString);
+    void startRunning(bool);
 
 protected:
 	void showEvent(QShowEvent*);
@@ -56,13 +56,15 @@ private:
 	void setBackground(int);
 
 	QLabel *lbTemp;
-	QLabel *lbBPM;
 	QLabel *m_gravity;
 	QLabel *lbName;
 	QPushButton *btnEnable;
 	QTimer *tUpdate;
 	StopWatch *sw;
 	QString name;
+    
+    double m_temp;
+    double m_cg;
 };
 
 #endif /* CONICALDISPLAY_H_ */

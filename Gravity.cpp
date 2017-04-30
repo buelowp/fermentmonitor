@@ -54,6 +54,16 @@ void Gravity::setDevice(int i)
 	m_device = i;
 }
 
+void Gravity::startRunning(bool r)
+{
+    if (r) {
+        m_update->start();
+    }
+    else {
+        m_update->stop();
+    }
+}
+
 bool Gravity::openPort(int port)
 {
     if ((m_handle = vl6180_initialise(port)) < 0) {
@@ -61,18 +71,19 @@ bool Gravity::openPort(int port)
         return false;
     }
     
-    m_update->start();
     return true;
 }
 
 void Gravity::updateTOF()
 {
     m_currDistance = get_distance(m_handle);
-    m_distances.push(m_currDistance);
+    if (m_currDistance < 255) {
+        m_distances.push(m_currDistance);
     
-    if (m_distances.size() > 20) {
-        m_distances.pop();
-        emit newMeasurement();
+        if (m_distances.size() > 50) {
+            m_distances.pop();
+            emit newMeasurement();
+        }
     }
 }
 

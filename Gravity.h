@@ -45,6 +45,7 @@ public:
 public slots:
     void updateTOF();
     void updateGravity();
+    void startRunning(bool);
     
 signals:
     void gravityUpdated(double);
