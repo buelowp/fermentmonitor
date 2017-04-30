@@ -28,11 +28,11 @@ ConicalDisplay::ConicalDisplay(QWidget *parent, Qt::WindowFlags f) : QFrame(pare
 	lbName->setText("<b>A fermenting beer</b>");
 	lbName->setStyleSheet(".QLabel{font: 32pt; color: black;}");
 	lbTemp = new QLabel(this);
-	lbTemp->setText(QString("<font style='font-size:20pt;'>Actual</font><br><font style='font-size:48pt; color:green'>%1</font> <font style='font-size:20pt'>%2F</font>").arg((double)75.1).arg(QChar(0xB0)));
+	lbTemp->setText(QString("<font style='font-size:16pt;'>Wort Temp</font><br><font style='font-size:48pt; color:green'>%1</font> <font style='font-size:20pt'>%2F</font>").arg((double)75.1).arg(QChar(0xB0)));
 	lbTemp->setStyleSheet(".QLabel{border-style: solid; border-radius: 5px; border-width: 1px;}");
 	lbTemp->setAlignment(Qt::AlignCenter);
 	m_gravity = new QLabel(this);
-	m_gravity->setText(QString("<font style='font-size:20pt;'>Gravity</font><br><font style='font-size:48pt;'>%1</font> <font style='font-size:20pt'>%2</font>").arg((double)(1.000), 0, 'g', 3));
+	m_gravity->setText(QString("<font style='font-size:16pt;'>Est Gravity</font><br><font style='font-size:36pt;'>%1</font> <font style='font-size:20pt'>gu</font>").arg((double)(1.000), 0, 'g', 3));
 	m_gravity->setStyleSheet(".QLabel{color: black; border-style: solid; border-radius: 5px; border-width: 1px;}");
 	m_gravity->setAlignment(Qt::AlignCenter);
 	lbBPM = new QLabel(this);
