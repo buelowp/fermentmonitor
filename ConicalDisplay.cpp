@@ -31,15 +31,15 @@ ConicalDisplay::ConicalDisplay(QWidget *parent, Qt::WindowFlags f) : QFrame(pare
 	lbName->setText(QString("<b>%1</b>").arg(name));
 	lbName->setStyleSheet(".QLabel{font: 32pt; color: black;}");
 	lbTemp = new QLabel(this);
-	lbTemp->setText(QString("<font style='font-size:16pt;'>Wort Temp</font><br><font style='font-size:48pt; color:green'>%1</font> <font style='font-size:20pt'>%2F</font>").arg(m_temp).arg(QChar(0xB0)));
+	lbTemp->setText(QString("<font style='font-family: \"Roboto\"; font-size:16pt;'>Wort Temp</font><br><font style='font-family: \"Roboto\"; font-size:36pt;'>%1</font> <font style='font-family: \"Roboto\"; font-size:20pt'>%2F</font>").arg(m_temp).arg(QChar(0xB0)));
 	lbTemp->setStyleSheet(".QLabel{border-style: solid; border-radius: 5px; border-width: 1px;}");
 	lbTemp->setAlignment(Qt::AlignCenter);
 	m_gravity = new QLabel(this);
-	m_gravity->setText(QString("<font style='font-size:16pt;'>Est Gravity</font><br><font style='font-size:36pt;'>%1</font> <font style='font-size:20pt'>gu</font>").arg(m_cg, 0, 'g', 3));
+	m_gravity->setText(QString("<font style='font-family: \"Roboto\"; font-size:16pt;'>Est Gravity</font><br><font style='font-family: \"Roboto\"; font-size:36pt;'>%1</font> <font style='font-size:20pt'>gu</font>").arg(m_cg, 0, 'g', 3));
 	m_gravity->setStyleSheet(".QLabel{color: black; border-style: solid; border-radius: 5px; border-width: 1px;}");
 	m_gravity->setAlignment(Qt::AlignCenter);
 	btnEnable = new QPushButton("Start", this);
-	btnEnable->setStyleSheet(".QPushButton{font: 36pt; color: black; border-radius: 5px; border-style: solid; border-width: 1px;}");
+	btnEnable->setStyleSheet(".QPushButton{font-family: \"Roboto\"; font-size: 36pt; color: black; border-radius: 5px; border-style: solid; border-width: 1px;}");
 	tUpdate = new QTimer(this);
 	sw = new StopWatch();
 
@@ -78,6 +78,9 @@ void ConicalDisplay::setName(QString n)
 
 void ConicalDisplay::showEvent(QShowEvent* e)
 {
+	qDebug() << __PRETTY_FUNCTION__ << "width=" << width();
+	qDebug() << __PRETTY_FUNCTION__ << "height=" << height();
+
 	int divby5 = (width() / 5);
 	int divby3 = (height() / 3);
 
